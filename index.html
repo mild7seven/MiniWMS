@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WMS ERP - PT Agri Wangi</title>
     
-    <meta name="description" content="SAP-style WMS Hybrid PT Agri Wangi Indonesia untuk pelacakan RM dan PM.">
+    <meta name="description" content="SAP-style WMS Hybrid PT Agri Wangi Indonesia.">
     <meta name="theme-color" content="#1C2228">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/192/1C2228/FFFFFF?text=WMS">
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     
@@ -29,27 +29,37 @@
             background: linear-gradient(135deg, #1C2228 0%, #354A5F 100%);
             display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
-        .login-card { background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); width: 90%; max-width: 400px; }
-        
-        /* LAYOUT */
+        .login-card { background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 90%; max-width: 400px; }
+
+        /* LAYOUT STRUCTURE */
         #wrapper { display: none; width: 100vw; height: 100vh; overflow: hidden; }
-        #sidebar { width: 260px; background-color: var(--sap-sidebar); color: #fff; display: flex; flex-direction: column; z-index: 1040; transition: 0.3s; }
-        .sidebar-header { padding: 20px; background: rgba(0,0,0,0.2); font-weight: bold; }
-        .nav-link { color: #A9B4BE; padding: 12px 20px; border-left: 4px solid transparent; cursor: pointer; }
+        
+        /* SIDEBAR */
+        #sidebar { 
+            width: 260px; background-color: var(--sap-sidebar); color: #fff; 
+            display: flex; flex-direction: column; transition: 0.3s ease; z-index: 1040; 
+        }
+        .sidebar-header { padding: 20px; background: rgba(0,0,0,0.2); font-weight: bold; font-size: 1.1rem; }
+        .nav-link { color: #A9B4BE; padding: 12px 20px; border-left: 4px solid transparent; cursor: pointer; border-radius: 0; }
         .nav-link:hover, .nav-link.active { color: #fff; background: var(--sap-sidebar-hover); }
         .nav-link.active { border-left-color: var(--sap-accent); font-weight: bold; }
-        
+        .nav-link i { margin-right: 12px; }
+
         #main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .topbar { background: var(--sap-header); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* TILES & CARDS */
-        .sap-tile { background: #fff; padding: 20px; border-radius: 8px; border-bottom: 4px solid var(--sap-accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .tile-val { font-size: 2rem; font-weight: 300; color: #32363A; }
+        .topbar { background: var(--sap-header); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; min-height: 56px; }
+
+        /* DASHBOARD TILES */
+        .sap-tile { background: #fff; padding: 20px; border-radius: 8px; border-bottom: 4px solid var(--sap-accent); box-shadow: 0 2px 6px rgba(0,0,0,0.05); height: 100%; }
+        .tile-val { font-size: 2.2rem; font-weight: 300; color: #32363A; margin-top: 5px; }
         .card { border: none; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        
+
+        /* MOBILE OVERLAY */
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1030; }
+
         @media (max-width: 768px) {
             #sidebar { position: fixed; left: -260px; height: 100%; }
             #sidebar.show { left: 0; }
+            .mobile-overlay.show { display: block; }
         }
     </style>
 </head>
@@ -58,52 +68,64 @@
 <div id="login-screen">
     <div class="login-card">
         <div class="text-center mb-4">
-            <h4 class="fw-bold text-dark">WMS ERP LOGIN</h4>
+            <h4 class="fw-bold">ERP WMS LOGIN</h4>
             <small class="text-muted">PT Agri Wangi Indonesia</small>
         </div>
         <form id="formLogin">
             <div class="mb-3">
-                <label class="form-label small fw-bold">ID AKUN</label>
-                <input type="text" id="loginId" class="form-control" required placeholder="Cth: dimas">
+                <label class="form-label small fw-bold">USER ID</label>
+                <input type="text" id="loginId" class="form-control" required placeholder="Contoh: dimas">
             </div>
-            <div class="mb-3">
-                <label class="form-label small fw-bold">KATA SANDI</label>
+            <div class="mb-4">
+                <label class="form-label small fw-bold">PASSWORD</label>
                 <input type="password" id="loginPass" class="form-control" required placeholder="******">
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">LOGIN KE SISTEM</button>
-            <div class="mt-4 p-2 bg-light rounded text-center x-small" style="font-size: 0.75rem;">
-                <strong>Demo SU:</strong> dimas / su2026<br>
-                <strong>Demo ADM:</strong> stafrm / staf123
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">MASUK</button>
+            <div class="mt-4 p-2 bg-light rounded text-center" style="font-size: 0.75rem;">
+                <strong>SU:</strong> dimas / su2026 | <strong>ADM:</strong> stafrm / staf123
             </div>
         </form>
     </div>
 </div>
 
 <div id="wrapper">
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
     <nav id="sidebar">
-        <div class="sidebar-header"><i class="bi bi-box-seam me-2"></i> ERP AGILE</div>
-        <div class="p-3 pb-0 small text-uppercase text-secondary fw-bold">Warehouse Ops</div>
+        <div class="sidebar-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-box-seam-fill text-primary"></i> WMS AGILE</span>
+            <button class="btn btn-link text-white d-md-none p-0" onclick="toggleSidebar()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        
+        <div class="p-3 pb-0 small text-uppercase text-secondary fw-bold">Execution</div>
         <ul class="nav flex-column mb-auto mt-2" role="tablist">
             <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-dash"><i class="bi bi-grid-1x2"></i> Launchpad</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gr"><i class="bi bi-arrow-down-left-square"></i> Inbound (GR)</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gi"><i class="bi bi-arrow-up-right-square"></i> Outbound (GI)</a></li>
             
             <div id="menu-su-only">
-                <div class="p-3 pb-0 small text-uppercase text-secondary fw-bold">System Data</div>
+                <div class="p-3 pb-0 small text-uppercase text-secondary fw-bold mt-2">Configuration</div>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-master"><i class="bi bi-database-fill-gear"></i> Master Data</a></li>
             </div>
         </ul>
-        <div class="p-3 border-top border-secondary">
+
+        <div class="p-3 border-top border-secondary bg-dark bg-opacity-25">
             <div class="small fw-bold" id="displayUserName">User</div>
-            <div class="badge bg-primary" id="displayUserRole" style="font-size: 0.6rem;">Role</div>
+            <div class="badge bg-primary" id="displayUserRole" style="font-size: 0.65rem;">Role</div>
         </div>
     </nav>
 
     <main id="main-content">
         <header class="topbar">
-            <button class="btn btn-link text-white d-md-none" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
-            <div class="fw-bold">GUDANG RM & PM</div>
-            <button class="btn btn-sm btn-outline-light border-0" onclick="logout()"><i class="bi bi-power"></i> Logout</button>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-white me-2 d-md-none p-0" onclick="toggleSidebar()"><i class="bi bi-list fs-4"></i></button>
+                <span class="fw-bold d-none d-md-inline">Warehouse Management System</span>
+                <span class="fw-bold d-md-none">WMS ERP</span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="topbar-btn bg-warning border-0 text-dark fw-bold px-3" onclick="tutupShift()"><i class="bi bi-envelope"></i> Shift Report</button>
+                <button class="topbar-btn bg-danger border-0" onclick="logout()"><i class="bi bi-power"></i></button>
+            </div>
         </header>
 
         <div class="p-3 p-md-4 tab-content">
@@ -111,48 +133,53 @@
                 <div class="row g-3 mb-4">
                     <div class="col-6 col-md-3"><div class="sap-tile"><h6>STOK RM</h6><div class="tile-val" id="dashRM">0</div></div></div>
                     <div class="col-6 col-md-3"><div class="sap-tile"><h6>STOK PM</h6><div class="tile-val" id="dashPM">0</div></div></div>
+                    <div class="col-6 col-md-3"><div class="sap-tile" style="border-color:#107E3E"><h6>GR HARI INI</h6><div class="tile-val" id="dashGR">0</div></div></div>
+                    <div class="col-6 col-md-3"><div class="sap-tile" style="border-color:#E9730C"><h6>GI HARI INI</h6><div class="tile-val" id="dashGI">0</div></div></div>
                 </div>
-                <div class="card"><div class="card-header bg-white">Inventory Monitor</div><div class="card-body p-0 table-responsive">
-                    <table class="table table-hover mb-0"><thead class="table-light"><tr><th>Batch ID</th><th>Stok</th><th>Exp</th></tr></thead><tbody id="stockTable"></tbody></table>
+                <div class="card"><div class="card-header">Inventory Status</div><div class="card-body p-0 table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light"><tr><th>Batch ID</th><th>Material</th><th>Qty</th><th>Exp</th></tr></thead>
+                        <tbody id="stockTable"></tbody>
+                    </table>
                 </div></div>
             </div>
 
             <div class="tab-pane fade" id="tab-gr">
-                <div class="card mb-3"><div class="card-body">
+                <div class="card mb-4"><div class="card-body">
                     <form id="formGR">
-                        <div class="row g-2">
+                        <div class="row g-3">
                             <div class="col-md-6"><label class="small fw-bold">Material</label><select id="grMat" class="form-select" required></select></div>
                             <div class="col-md-6"><label class="small fw-bold">Supplier</label><select id="grSup" class="form-select" required></select></div>
                             <div class="col-md-4"><label class="small fw-bold">Tgl Terima</label><input type="date" id="grDate" class="form-control" required></div>
-                            <div class="col-md-4"><label class="small fw-bold">Qty</label><input type="number" id="grQty" class="form-control" required></div>
-                            <div class="col-md-4"><label class="small fw-bold">Expired</label><input type="date" id="grExp" class="form-control" required></div>
+                            <div class="col-md-4"><label class="small fw-bold">Qty Masuk</label><input type="number" id="grQty" class="form-control" required></div>
+                            <div class="col-md-4"><label class="small fw-bold">Tgl Expired</label><input type="date" id="grExp" class="form-control" required></div>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3 w-100">Post Goods Receipt</button>
+                        <button type="submit" class="btn btn-primary mt-3 px-4 fw-bold">GENERATE BATCH & PRINT</button>
                     </form>
                 </div></div>
-                <div class="card"><div class="card-header bg-info text-white">Kelola Transaksi GR Aktif</div><div class="card-body p-0 table-responsive">
-                    <table class="table table-sm mb-0"><thead><tr><th>Batch ID</th><th>Sisa</th><th>Aksi</th></tr></thead><tbody id="grHistory"></tbody></table>
+                <div class="card"><div class="card-header bg-info text-white">Maintenance GR History</div><div class="card-body p-0 table-responsive">
+                    <table class="table table-sm mb-0"><thead><tr class="table-light"><th>Batch ID</th><th>Sisa</th><th>Action</th></tr></thead><tbody id="grHistory"></tbody></table>
                 </div></div>
             </div>
 
             <div class="tab-pane fade" id="tab-gi">
-                <div class="card" style="max-width: 500px;"><div class="card-body">
-                    <h5>Post GI (FEFO Standard)</h5>
+                <div class="card border-warning border-2" style="max-width: 550px;"><div class="card-body">
+                    <h5 class="fw-bold">Post Good Issue (Strict FEFO)</h5>
                     <form id="formGI">
-                        <div class="mb-3"><label class="small fw-bold">Pilih Batch</label><select id="giBatch" class="form-select" required></select></div>
-                        <div class="mb-3"><label class="small fw-bold">Qty Kirim</label><input type="number" id="giQty" class="form-control" required></div>
-                        <button type="submit" class="btn btn-warning w-100 fw-bold">Execute Issue</button>
+                        <div class="mb-3"><label class="small fw-bold">Select Active Batch</label><select id="giBatch" class="form-select" required></select></div>
+                        <div class="mb-3"><label class="small fw-bold">Issue Quantity</label><input type="number" id="giQty" class="form-control" required></div>
+                        <button type="submit" class="btn btn-warning w-100 fw-bold">EXECUTE ISSUE</button>
                     </form>
                 </div></div>
             </div>
 
             <div class="tab-pane fade" id="tab-master">
                 <div class="row g-3">
-                    <div class="col-md-6"><div class="card"><div class="card-header">Supplier Master</div><div class="card-body">
-                        <form id="formSup"><input type="text" id="sName" placeholder="Nama" class="form-control mb-2" required><input type="text" id="sInit" placeholder="Inisial (3 Huruf)" class="form-control mb-2" maxlength="3" required><button class="btn btn-sm btn-primary">Simpan</button></form>
+                    <div class="col-md-6"><div class="card"><div class="card-header">Supplier Management</div><div class="card-body">
+                        <form id="formSup"><input type="text" id="sName" placeholder="Nama" class="form-control mb-2" required><input type="text" id="sInit" placeholder="Inisial (3 Huruf)" class="form-control mb-2" maxlength="3" required><button class="btn btn-primary btn-sm">Save Supplier</button></form>
                     </div></div></div>
-                    <div class="col-md-6"><div class="card"><div class="card-header">Material Master (MSDN)</div><div class="card-body">
-                        <form id="formMSDN"><input type="text" id="mCode" placeholder="Kode" class="form-control mb-2" required><input type="text" id="mName" placeholder="Nama" class="form-control mb-2" required><button class="btn btn-sm btn-primary">Simpan</button></form>
+                    <div class="col-md-6"><div class="card"><div class="card-header">MSDN Material Management</div><div class="card-body">
+                        <form id="formMSDN"><input type="text" id="mCode" placeholder="Kode" class="form-control mb-2" required><input type="text" id="mName" placeholder="Nama" class="form-control mb-2" required><button class="btn btn-primary btn-sm">Save MSDN</button></form>
                     </div></div></div>
                 </div>
             </div>
@@ -161,44 +188,59 @@
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header bg-warning"><h5>Koreksi Transaksi GR</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-header bg-warning"><h5>Koreksi GR</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
     <div class="modal-body"><form id="formEdit">
         <input type="hidden" id="eBatchID">
-        <div class="mb-2"><label>Koreksi Qty</label><input type="number" id="eQty" class="form-control" required></div>
-        <div class="mb-2"><label>Koreksi Expired</label><input type="date" id="eExp" class="form-control" required></div>
-        <button class="btn btn-success w-100 mt-2">Update Stok</button>
+        <div class="mb-2"><label>Qty Koreksi</label><input type="number" id="eQty" class="form-control" required></div>
+        <div class="mb-2"><label>Exp Koreksi</label><input type="date" id="eExp" class="form-control" required></div>
+        <button class="btn btn-success w-100 mt-3">UPDATE BATCH</button>
     </form></div>
+</div></div></div>
+
+<div class="modal fade" id="printModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content text-center p-4">
+    <i class="bi bi-printer fs-1 text-primary mb-2"></i>
+    <h5 id="printBatchID" class="fw-bold"></h5>
+    <button class="btn btn-dark w-100 mt-3" onclick="printBluetoothLabel()">PRINT LABEL</button>
 </div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // --- AUTH & DATA ---
+    // --- AUTH DATA ---
     const accounts = [
         { id: 'dimas', pass: 'su2026', nama: 'Dimas Pratomo', role: 'SU' },
-        { id: 'admin', pass: 'admin123', nama: 'Super Admin', role: 'SU' },
-        { id: 'stafrm', pass: 'staf123', nama: 'Admin RM', role: 'ADM' }
+        { id: 'admin', pass: 'admin123', nama: 'Administrator', role: 'SU' },
+        { id: 'stafrm', pass: 'staf123', nama: 'Staf Gudang', role: 'ADM' }
     ];
 
     let user = JSON.parse(localStorage.getItem('wms_session')) || null;
-    let sList = JSON.parse(localStorage.getItem('wms_s')) || [{name: 'CV Contoh', initial: 'CVC'}];
-    let mList = JSON.parse(localStorage.getItem('wms_m')) || [{code: 'RM-TEST', name: 'Raw Material 01'}];
+    let sList = JSON.parse(localStorage.getItem('wms_s')) || [{name: 'CV Berkah', initial: 'CVB'}];
+    let mList = JSON.parse(localStorage.getItem('wms_m')) || [{code: 'RM-TEH-01', name: 'Teh Hitam'}];
     let stocks = JSON.parse(localStorage.getItem('wms_gr')) || [];
     let giLog = JSON.parse(localStorage.getItem('wms_gi')) || [];
-    let modalUI;
+    let modalEdit, modalPrint, currentPrintID = "";
 
     document.addEventListener('DOMContentLoaded', () => { 
-        modalUI = new bootstrap.Modal(document.getElementById('editModal'));
+        modalEdit = new bootstrap.Modal(document.getElementById('editModal'));
+        modalPrint = new bootstrap.Modal(document.getElementById('printModal'));
+        
+        // --- PERBAIKAN SIDEBAR OTOMATIS TUTUP ---
+        document.querySelectorAll('#sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) toggleSidebar();
+            });
+        });
+
         checkAuth(); 
     });
 
-    // --- LOGIKA LOGIN ---
+    // --- LOGIC AUTH ---
     document.getElementById('formLogin').onsubmit = (e) => {
         e.preventDefault();
         const acc = accounts.find(a => a.id === document.getElementById('loginId').value && a.pass === document.getElementById('loginPass').value);
         if(acc) { 
             localStorage.setItem('wms_session', JSON.stringify({ nama: acc.nama, role: acc.role })); 
             location.reload(); 
-        } else alert('Login Gagal!');
+        } else alert('ID atau Password salah!');
     };
 
     function checkAuth() {
@@ -213,9 +255,12 @@
     }
 
     function logout() { localStorage.removeItem('wms_session'); location.reload(); }
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); }
+    function toggleSidebar() { 
+        document.getElementById('sidebar').classList.toggle('show'); 
+        document.getElementById('mobileOverlay').classList.toggle('show');
+    }
 
-    // --- GR/GI LOGIC ---
+    // --- GR LOGIC ---
     document.getElementById('formGR').onsubmit = function(e) {
         e.preventDefault();
         const mat = document.getElementById('grMat').value;
@@ -226,13 +271,14 @@
         
         stocks.push({ batchID: bID, mat, qtyInit: q, qtyCurrent: q, exp: document.getElementById('grExp').value, date: d });
         localStorage.setItem('wms_gr', JSON.stringify(stocks));
-        this.reset(); refreshUI(); alert('Batch: ' + bID);
+        currentPrintID = bID; document.getElementById('printBatchID').innerText = bID;
+        this.reset(); refreshUI(); modalPrint.show();
     };
 
     function deleteGR(id) {
         const b = stocks.find(x => x.batchID === id);
-        if(b.qtyCurrent < b.qtyInit) return alert('Dilarang! Stok sudah dipakai GI.');
-        if(confirm('Hapus Batch ' + id + '?')) {
+        if(b.qtyCurrent < b.qtyInit) return alert('Dilarang! Sebagian stok batch ini sudah keluar (GI).');
+        if(confirm('Batalkan transaksi GR: ' + id + '?')) {
             stocks = stocks.filter(x => x.batchID !== id);
             localStorage.setItem('wms_gr', JSON.stringify(stocks)); refreshUI();
         }
@@ -240,11 +286,11 @@
 
     function openEdit(id) {
         const b = stocks.find(x => x.batchID === id);
-        if(b.qtyCurrent < b.qtyInit) return alert('Dilarang! Stok sudah dipakai GI.');
+        if(b.qtyCurrent < b.qtyInit) return alert('Dilarang! Stok batch ini sudah terpakai.');
         document.getElementById('eBatchID').value = b.batchID;
         document.getElementById('eQty').value = b.qtyInit;
         document.getElementById('eExp').value = b.exp;
-        modalUI.show();
+        modalEdit.show();
     }
 
     document.getElementById('formEdit').onsubmit = function(e) {
@@ -252,9 +298,10 @@
         const b = stocks.find(x => x.batchID === document.getElementById('eBatchID').value);
         b.qtyInit = b.qtyCurrent = parseFloat(document.getElementById('eQty').value);
         b.exp = document.getElementById('eExp').value;
-        localStorage.setItem('wms_gr', JSON.stringify(stocks)); modalUI.hide(); refreshUI();
+        localStorage.setItem('wms_gr', JSON.stringify(stocks)); modalEdit.hide(); refreshUI();
     };
 
+    // --- GI LOGIC (FEFO) ---
     document.getElementById('formGI').onsubmit = function(e) {
         e.preventDefault();
         const bid = document.getElementById('giBatch').value;
@@ -262,45 +309,62 @@
         const b = stocks.find(x => x.batchID === bid);
         const elder = stocks.filter(x => x.mat === b.mat && x.qtyCurrent > 0).sort((a,b) => new Date(a.exp)-new Date(b.exp))[0];
         
-        if(elder.batchID !== bid) return alert('FEFO Violation! Gunakan: ' + elder.batchID);
-        if(b.qtyCurrent < q) return alert('Stok Kurang!');
+        if(elder.batchID !== bid) return alert('SISTEM BLOK: FEFO Violation! Harap gunakan batch ' + elder.batchID);
+        if(b.qtyCurrent < q) return alert('Stok batch tidak cukup!');
 
         b.qtyCurrent -= q;
         giLog.push({ id: Date.now(), ref: bid, qty: q, date: new Date().toISOString() });
         localStorage.setItem('wms_gr', JSON.stringify(stocks)); localStorage.setItem('wms_gi', JSON.stringify(giLog));
-        this.reset(); refreshUI(); alert('GI Berhasil.');
+        this.reset(); refreshUI(); alert('GI Posted Successfully.');
     };
 
-    // --- MASTER LOGIC ---
-    document.getElementById('formSup').onsubmit = function(e) {
-        e.preventDefault(); sList.push({name: document.getElementById('sName').value, initial: document.getElementById('sInit').value.toUpperCase()});
-        localStorage.setItem('wms_s', JSON.stringify(sList)); this.reset(); refreshUI();
-    };
-    document.getElementById('formMSDN').onsubmit = function(e) {
-        e.preventDefault(); mList.push({code: document.getElementById('mCode').value, name: document.getElementById('mName').value});
-        localStorage.setItem('wms_m', JSON.stringify(mList)); this.reset(); refreshUI();
-    };
-
+    // --- REFRESH DASHBOARD & UI ---
     function refreshUI() {
+        if(!user) return;
         document.getElementById('grMat').innerHTML = mList.map(m => `<option value="${m.code}">${m.name}</option>`).join('');
         document.getElementById('grSup').innerHTML = sList.map(s => `<option value="${s.initial}">${s.name}</option>`).join('');
         
         const active = stocks.filter(x => x.qtyCurrent > 0).sort((a,b) => new Date(a.exp)-new Date(b.exp));
-        document.getElementById('giBatch').innerHTML = active.map(b => `<option value="${b.batchID}">${b.batchID} (Sisa: ${b.qtyCurrent})</option>`).join('');
+        document.getElementById('giBatch').innerHTML = '<option value="">-- Pilih Batch --</option>' + active.map(b => `<option value="${b.batchID}">${b.batchID} (Stock: ${b.qtyCurrent})</option>`).join('');
         
-        document.getElementById('stockTable').innerHTML = active.map(b => `<tr><td>${b.batchID}</td><td>${b.qtyCurrent}</td><td>${b.exp}</td></tr>`).join('');
+        document.getElementById('stockTable').innerHTML = active.map(b => `<tr><td class="small fw-bold text-primary">${b.batchID}</td><td>${b.mat}</td><td>${b.qtyCurrent}</td><td class="small">${b.exp}</td></tr>`).join('');
+        
         document.getElementById('grHistory').innerHTML = stocks.map(b => {
-            const used = b.qtyCurrent < b.qtyInit;
-            return `<tr><td>${b.batchID}</td><td>${b.qtyCurrent}</td><td>
-                <button class="btn btn-sm btn-outline-primary ${used?'disabled':''}" onclick="openEdit('${b.batchID}')"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-outline-danger ${used?'disabled':''}" onclick="deleteGR('${b.batchID}')"><i class="bi bi-trash"></i></button>
+            const isUsed = b.qtyCurrent < b.qtyInit;
+            return `<tr><td class="small">${b.batchID}</td><td>${b.qtyCurrent}</td><td>
+                <button class="btn btn-sm btn-outline-primary ${isUsed?'disabled':''}" onclick="openEdit('${b.batchID}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger ${isUsed?'disabled':''}" onclick="deleteGR('${b.batchID}')"><i class="bi bi-trash"></i></button>
             </td></tr>`;
         }).join('');
 
-        let r=0, p=0;
+        let r=0, p=0, today = new Date().toISOString().split('T')[0];
         stocks.forEach(x => { if(x.qtyCurrent>0) { if(x.mat.startsWith('RM')) r+=x.qtyCurrent; else p+=x.qtyCurrent; } });
         document.getElementById('dashRM').innerText = r; document.getElementById('dashPM').innerText = p;
+        document.getElementById('dashGR').innerText = stocks.filter(x => x.date === today).length;
+        document.getElementById('dashGI').innerText = giLog.filter(x => x.date.startsWith(today)).length;
     }
+
+    // --- BLUETOOTH & EMAIL ---
+    async function printBluetoothLabel() {
+        alert("Mengirim data " + currentPrintID + " ke printer...");
+        modalPrint.hide();
+    }
+
+    function tutupShift() {
+        const today = new Date().toISOString().split('T')[0];
+        const body = encodeURIComponent(`Laporan WMS Shift Hari Ini (${today})\nUser: ${user.nama}\nTotal Stok RM: ${document.getElementById('dashRM').innerText}\nTotal Stok PM: ${document.getElementById('dashPM').innerText}`);
+        window.location.href = `mailto:admin@agriwangi.com?subject=ShiftReport_${today}&body=${body}`;
+    }
+
+    // --- MASTER ---
+    document.getElementById('formSup').onsubmit = (e) => {
+        e.preventDefault(); sList.push({name:document.getElementById('sName').value, initial:document.getElementById('sInit').value.toUpperCase()});
+        localStorage.setItem('wms_s', JSON.stringify(sList)); e.target.reset(); refreshUI();
+    };
+    document.getElementById('formMSDN').onsubmit = (e) => {
+        e.preventDefault(); mList.push({code:document.getElementById('mCode').value, name:document.getElementById('mName').value});
+        localStorage.setItem('wms_m', JSON.stringify(mList)); e.target.reset(); refreshUI();
+    };
 
     if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 </script>

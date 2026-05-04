@@ -1,8 +1,8 @@
 {
-  "id": "com.agriwangi.wms.erp.v4",
+  "id": "com.agriwangi.wms.v4",
   "name": "WMS ERP - PT Agri Wangi Indonesia",
   "short_name": "WMS Agri",
-  "description": "SAP-style Warehouse Management System dengan kapabilitas Offline & FEFO.",
+  "description": "Warehouse Management System dengan kapabilitas Offline, Traceability, dan FEFO.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F3F4F6",

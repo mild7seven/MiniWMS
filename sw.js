@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wms-agri-v7-final';
+const CACHE_NAME = 'wms-agri-v8-final';
 const ASSETS = [
   './', './index.html', './manifest.json',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
