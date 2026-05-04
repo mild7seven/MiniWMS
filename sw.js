@@ -1,65 +1,99 @@
-// Ganti versi cache setiap kali ada pembaruan pada index.html atau aset lainnya
-const CACHE_NAME = 'wms-agri-v4-cache';
+const CACHE_NAME = 'wms-agri-v6-pwabuilder';
 
-// Daftar file dan aset eksternal yang harus disimpan untuk penggunaan offline
-const ASSETS_TO_CACHE = [
+// Aset inti yang WAJIB tersimpan di HP/Laptop saat pertama kali diinstal
+const PRECACHE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  // Cache Bootstrap dari CDN agar UI tetap rapi dan modal berfungsi saat offline
+  // Library Bootstrap & Icons dari CDN (Wajib di-cache agar tampilan tidak hancur saat offline)
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css'
 ];
 
-// --- 1. Event Install: Menyimpan aset ke Cache ---
-self.addEventListener('install', event => {
+// --- 1. Event INSTALL: Melakukan Pre-cache aset ---
+self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Paksa SW baru langsung aktif
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[Service Worker v4] Caching App Shell & Assets');
-        return cache.addAll(ASSETS_TO_CACHE);
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[Service Worker] Precaching App Shell');
+      return cache.addAll(PRECACHE_ASSETS);
+    }).catch(err => console.error('[Service Worker] Precache gagal:', err))
   );
-  // Memaksa service worker versi baru untuk segera mengambil alih tanpa menunggu tab ditutup
-  self.skipWaiting(); 
 });
 
-// --- 2. Event Activate: Membersihkan Cache versi lama ---
-self.addEventListener('activate', event => {
+// --- 2. Event ACTIVATE: Membersihkan sisa cache versi lama ---
+self.addEventListener('activate', (event) => {
+  self.clients.claim(); // Langsung ambil kontrol halaman
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          // Jika nama cache tidak sama dengan versi saat ini, hapus cache lama
+        cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker v4] Menghapus cache usang:', cacheName);
+            console.log('[Service Worker] Menghapus cache lama:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
-  // Memastikan service worker langsung mengontrol halaman saat itu juga
-  self.clients.claim();
 });
 
-// --- 3. Event Fetch: Menyajikan data dari Cache jika offline ---
-self.addEventListener('fetch', event => {
-  // Hanya proses request dengan metode GET
+// --- 3. Event FETCH: Strategi Hibrida (PWABuilder Standard) ---
+self.addEventListener('fetch', (event) => {
+  // Hanya tangani request tipe GET (Abaikan POST, PUT, dll)
   if (event.request.method !== 'GET') return;
 
+  const requestUrl = new URL(event.request.url);
+
+  // STRATEGI 1: NETWORK FIRST, FALLBACK TO CACHE
+  // Digunakan untuk navigasi HTML. Tujuannya: Selalu cari versi web terbaru, jika internet mati, pakai yang di cache.
+  if (event.request.mode === 'navigate' || requestUrl.pathname === '/' || requestUrl.pathname.endsWith('index.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          // Simpan versi terbaru ke cache secara diam-diam
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return networkResponse;
+        })
+        .catch(() => {
+          // Jika offline, ambil index.html dari cache
+          console.warn('[Service Worker] Offline: Melayani halaman dari Cache.');
+          return caches.match('./index.html');
+        })
+    );
+    return; // Hentikan eksekusi di sini
+  }
+
+  // STRATEGI 2: CACHE FIRST, FALLBACK TO NETWORK
+  // Digunakan untuk CSS, JS, dan Gambar. Tujuannya: Loading instan.
   event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        // Jika ada di cache lokal, sajikan langsung (Offline First)
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        
-        // Jika tidak ada di cache, coba ambil dari jaringan (Internet)
-        return fetch(event.request).catch(() => {
-          console.warn('[Service Worker] Fetch gagal. Perangkat offline dan resource tidak di-cache:', event.request.url);
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse; // Langsung kembalikan dari Cache
+      }
+      
+      // Jika tidak ada di cache, ambil dari Internet
+      return fetch(event.request)
+        .then((networkResponse) => {
+          // Pastikan response valid sebelum di-cache (menghindari caching halaman error)
+          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            // Jika request mengarah ke domain luar (seperti CDN Bootstrap), type-nya 'cors' atau 'opaque', kita tetap simpan
+            if (networkResponse.status === 200) {
+               const responseClone = networkResponse.clone();
+               caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+            }
+            return networkResponse;
+          }
+          
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return networkResponse;
+        })
+        .catch(() => {
+          console.error('[Service Worker] Gagal mengambil aset:', event.request.url);
         });
-      })
+    })
   );
 });

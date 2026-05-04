@@ -2,144 +2,356 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WMS ERP v4.0 - PT Agri Wangi Indonesia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WMS ERP - PT Agri Wangi</title>
+    
+    <meta name="description" content="SAP-style WMS Hybrid PT Agri Wangi Indonesia untuk pelacakan RM dan PM.">
+    <meta name="theme-color" content="#1C2228">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/1C2228/FFFFFF?text=WMS">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
     <style>
-        body { background-color: #f4f7f6; padding-bottom: 70px; font-family: 'Segoe UI', sans-serif; }
-        .navbar { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .card-header { border-radius: 12px 12px 0 0 !important; font-weight: bold; }
-        .nav-pills .nav-link { margin: 0 2px; font-weight: bold; }
-        .nav-pills .nav-link.active { background-color: #0d6efd; }
-        .dashboard-metric { font-size: 2rem; font-weight: bold; }
+        /* --- SAP FIORI INSPIRED THEME --- */
+        :root {
+            --sap-bg: #F3F4F6;
+            --sap-header: #354A5F;
+            --sap-sidebar: #1C2228;
+            --sap-sidebar-hover: #2B343D;
+            --sap-accent: #0A6ED1;
+        }
+        
+        body { background-color: var(--sap-bg); font-family: 'Segoe UI', Arial, sans-serif; overflow-x: hidden; }
+        
+        /* Layout Structure */
+        #wrapper { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        #sidebar {
+            width: 260px;
+            background-color: var(--sap-sidebar);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            z-index: 1040;
+        }
+        .sidebar-header { padding: 20px; background-color: rgba(0,0,0,0.2); font-weight: bold; letter-spacing: 1px; }
+        .nav-link { color: #A9B4BE; padding: 15px 20px; border-left: 4px solid transparent; border-radius: 0; cursor: pointer; }
+        .nav-link:hover { color: #fff; background-color: var(--sap-sidebar-hover); }
+        .nav-link.active { color: #fff; background-color: var(--sap-sidebar-hover); border-left-color: var(--sap-accent); font-weight: bold; }
+        .nav-link i { margin-right: 10px; font-size: 1.1rem; }
+        
+        /* Main Content */
+        #main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        /* Top Header */
+        .topbar { background-color: var(--sap-header); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .topbar-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 5px 15px; border-radius: 4px; transition: 0.2s; }
+        .topbar-btn:hover { background: rgba(255,255,255,0.1); }
+        
+        /* ERP Cards & Tiles */
+        .card { border: none; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card-header { background-color: #fff; border-bottom: 1px solid #E4E5E7; font-weight: 600; padding: 15px 20px; border-radius: 8px 8px 0 0 !important; color: #32363A; }
+        
+        /* Launchpad Tiles */
+        .sap-tile { padding: 20px; border-radius: 8px; background: #fff; border-bottom: 3px solid transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: 0.2s; height: 100%; }
+        .sap-tile:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .tile-blue { border-bottom-color: var(--sap-accent); }
+        .tile-green { border-bottom-color: #107E3E; }
+        .tile-orange { border-bottom-color: #E9730C; }
+        .tile-red { border-bottom-color: #BB0000; }
+        .tile-title { font-size: 0.9rem; color: #6A6D70; font-weight: 600; text-transform: uppercase; }
+        .tile-value { font-size: 2.2rem; font-weight: 300; color: #32363A; margin-top: 10px; }
+        
+        /* Forms & Inputs */
+        .form-control, .form-select { border-radius: 4px; border: 1px solid #89919A; padding: 8px 12px; }
+        .form-control:focus, .form-select:focus { border-color: var(--sap-accent); box-shadow: 0 0 0 2px rgba(10,110,209,0.2); }
+        .form-label { font-size: 0.85rem; font-weight: 600; color: #32363A; }
+        .btn-sap { background-color: var(--sap-accent); color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; }
+        .btn-sap:hover { background-color: #0854A1; color: white; }
+
+        /* Responsive Mobile */
+        @media (max-width: 768px) {
+            #sidebar { position: fixed; left: -260px; height: 100%; }
+            #sidebar.show { left: 0; }
+            #main-content { margin-left: 0; }
+            .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1030; }
+            .mobile-overlay.show { display: block; }
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="#">WMS HYBRID v4.0</a>
-        <div class="ms-auto d-flex gap-2">
-            <button class="btn btn-warning btn-sm fw-bold" onclick="tutupShift()">✉️ TUTUP SHIFT</button>
-            <button class="btn btn-light btn-sm fw-bold" onclick="alert('Fungsi Sync berjalan...')">☁️ SYNC</button>
+<div id="wrapper">
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+    <nav id="sidebar">
+        <div class="sidebar-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-box-fill text-primary"></i> ERP AGILE</span>
+            <i class="bi bi-x-lg d-md-none" style="cursor: pointer;" onclick="toggleSidebar()"></i>
         </div>
-    </div>
-</nav>
-
-<div class="container mt-4">
-    <ul class="nav nav-pills nav-justified mb-4" id="mainTab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-dash">Dashboard</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-gr">Masuk (GR)</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-gi">Keluar (GI)</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-master">Master Data</button></li>
-    </ul>
-
-    <div class="tab-content">
         
-        <div class="tab-pane fade show active" id="tab-dash">
-            <div class="row g-3">
-                <div class="col-6 col-md-3">
-                    <div class="card bg-primary text-white text-center p-3">
-                        <h6>Total Stok RM</h6>
-                        <div class="dashboard-metric" id="dashRM">0</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card bg-info text-white text-center p-3">
-                        <h6>Total Stok PM</h6>
-                        <div class="dashboard-metric" id="dashPM">0</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card bg-success text-white text-center p-3">
-                        <h6>GR Hari Ini</h6>
-                        <div class="dashboard-metric" id="dashGRToday">0</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card bg-warning text-dark text-center p-3">
-                        <h6>GI Hari Ini</h6>
-                        <div class="dashboard-metric" id="dashGIToday">0</div>
-                    </div>
-                </div>
+        <div class="p-3 pb-0 small text-uppercase" style="color: #6A6D70; font-weight: bold;">Logistics Execution</div>
+        <ul class="nav flex-column mb-auto" id="nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab-dash-link" data-bs-toggle="tab" data-bs-target="#tab-dash" role="tab" onclick="if(window.innerWidth<=768) toggleSidebar()">
+                    <i class="bi bi-speedometer2"></i> Launchpad
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab-gr-link" data-bs-toggle="tab" data-bs-target="#tab-gr" role="tab" onclick="if(window.innerWidth<=768) toggleSidebar()">
+                    <i class="bi bi-box-arrow-in-right"></i> Inbound (GR)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab-gi-link" data-bs-toggle="tab" data-bs-target="#tab-gi" role="tab" onclick="if(window.innerWidth<=768) toggleSidebar()">
+                    <i class="bi bi-box-arrow-up-right"></i> Outbound (GI)
+                </a>
+            </li>
+            <div class="p-3 pb-0 small text-uppercase mt-2" style="color: #6A6D70; font-weight: bold;">System Data</div>
+            <li class="nav-item">
+                <a class="nav-link" id="tab-master-link" data-bs-toggle="tab" data-bs-target="#tab-master" role="tab" onclick="if(window.innerWidth<=768) toggleSidebar()">
+                    <i class="bi bi-database-fill-gear"></i> Master Data
+                </a>
+            </li>
+        </ul>
+        <div class="p-3">
+            <div class="d-flex align-items-center text-white text-decoration-none">
+                <i class="bi bi-person-circle fs-4 me-2"></i>
+                <strong class="small">Super User</strong>
             </div>
+        </div>
+    </nav>
 
-            <div class="card border-danger border-2 mt-3">
-                <div class="card-header bg-danger text-white">⚠️ Warning: Mendekati Expired / Stok Menipis</div>
-                <div class="card-body">
-                    <ul class="list-group" id="dashAlerts">
-                        </ul>
-                </div>
+    <main id="main-content">
+        <header class="topbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-white p-0 me-3 d-md-none" onclick="toggleSidebar()">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+                <h5 class="mb-0 fw-bold">WMS Module: RM/PM</h5>
             </div>
+            <div class="d-flex gap-2">
+                <button class="topbar-btn" onclick="syncData()"><i class="bi bi-cloud-arrow-up"></i> <span class="d-none d-md-inline">Sync</span></button>
+                <button class="topbar-btn" onclick="tutupShift()"><i class="bi bi-envelope-paper"></i> <span class="d-none d-md-inline">End Shift</span></button>
+            </div>
+        </header>
+
+        <div class="p-3 p-md-4 tab-content flex-grow-1">
             
-            <div class="mt-3 text-end">
-                <button class="btn btn-outline-primary" onclick="renderStockLog()">Lihat Rincian Traceability Stok</button>
-            </div>
-            <div id="stockList" class="mt-3"></div>
-        </div>
-
-        <div class="tab-pane fade" id="tab-gr">
-            <div class="card border-success border-2">
-                <div class="card-body">
-                    <form id="formGR">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label>Material (MSDN)</label>
-                                <select id="grMat" class="form-select" required></select>
-                            </div>
-                            <div class="col-md-6">
-                                <label>Supplier</label>
-                                <select id="grSup" class="form-select" required></select>
-                            </div>
-                            <div class="col-md-4"><label>Tgl Terima</label><input type="date" id="grDate" class="form-control" required></div>
-                            <div class="col-md-4"><label>Qty Masuk</label><input type="number" id="grQty" class="form-control" required></div>
-                            <div class="col-md-4"><label>Tgl Expired</label><input type="date" id="grExp" class="form-control" required></div>
+            <div class="tab-pane fade show active" id="tab-dash" role="tabpanel">
+                <h4 class="mb-4" style="color: #32363A; font-weight: 300;">Overview</h4>
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3">
+                        <div class="sap-tile tile-blue">
+                            <div class="tile-title">Total RM in Warehouse</div>
+                            <div class="tile-value" id="dashRM">0</div>
                         </div>
-                        <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold">PROSES GR & BUAT BATCH</button>
-                    </form>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="sap-tile tile-green">
+                            <div class="tile-title">Total PM in Warehouse</div>
+                            <div class="tile-value" id="dashPM">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="sap-tile tile-orange">
+                            <div class="tile-title">Goods Receipt (Today)</div>
+                            <div class="tile-value" id="dashGRToday">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="sap-tile tile-red">
+                            <div class="tile-title">Goods Issue (Today)</div>
+                            <div class="tile-value" id="dashGIToday">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-table"></i> Active Inventory Batches</span>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="refreshUI()"><i class="bi bi-arrow-clockwise"></i></button>
+                            </div>
+                            <div class="card-body p-0 table-responsive">
+                                <table class="table table-hover mb-0 align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Batch ID</th>
+                                            <th>Material</th>
+                                            <th>Stock</th>
+                                            <th>Exp. Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="stockTableBody">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mt-3 mt-lg-0">
+                        <div class="card border-0" style="border-top: 4px solid #BB0000 !important;">
+                            <div class="card-header bg-white"><i class="bi bi-exclamation-triangle-fill text-danger"></i> FEFO Alerts</div>
+                            <div class="card-body p-0">
+                                <ul class="list-group list-group-flush" id="dashAlerts">
+                                    </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="tab-pane fade" id="tab-gi">
-            <div class="card border-warning border-2">
-                <div class="card-body">
-                    <div class="alert alert-info py-2 small">Sistem menerapkan <strong>Strict FEFO</strong>.</div>
-                    <form id="formGI">
-                        <div class="mb-3">
-                            <label>Pilih Batch (Prioritas FEFO Teratas)</label>
-                            <select id="giBatch" class="form-select" required></select>
-                        </div>
-                        <div class="mb-3">
-                            <label>Jumlah Kirim ke Sub-Store</label>
-                            <input type="number" id="giQty" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-warning w-100 fw-bold">PROSES GI</button>
-                    </form>
+            <div class="tab-pane fade" id="tab-gr" role="tabpanel">
+                <h4 class="mb-4" style="color: #32363A; font-weight: 300;">Post Goods Receipt</h4>
+                <div class="card">
+                    <div class="card-header">Transaction Data Entry</div>
+                    <div class="card-body">
+                        <form id="formGR">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Material (Verified by MSDN) *</label>
+                                    <select id="grMat" class="form-select" onchange="checkImport()" required></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Vendor / Supplier *</label>
+                                    <select id="grSup" class="form-select" required></select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Posting Date *</label>
+                                    <input type="date" id="grDate" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Procurement Type</label>
+                                    <select id="grOrigin" class="form-select" onchange="checkImport()">
+                                        <option value="Lokal">Local Sourcing</option>
+                                        <option value="Import">Import / Overseas</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Quantity Received *</label>
+                                    <input type="number" id="grQty" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Purchase Order (PO)</label>
+                                    <input type="text" id="grPO" class="form-control" placeholder="Optional">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Delivery Note (DO)</label>
+                                    <input type="text" id="grDO" class="form-control" placeholder="Optional">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Shelf Life Exp. Date *</label>
+                                    <input type="date" id="grExp" class="form-control" required>
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="reset" class="btn btn-outline-secondary px-4">Clear</button>
+                                <button type="submit" class="btn btn-sap px-4"><i class="bi bi-floppy"></i> Post & Generate Batch</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="tab-pane fade" id="tab-master">
-            <div class="alert alert-secondary">Gunakan tab ini untuk mendaftarkan Supplier dan MSDN Material (Kode, Nama, Jenis, dll).</div>
-            <button class="btn btn-primary btn-sm mb-3" onclick="injectDummyData()">Isi Data Dummy (Untuk Testing)</button>
-        </div>
+            <div class="tab-pane fade" id="tab-gi" role="tabpanel">
+                <h4 class="mb-4" style="color: #32363A; font-weight: 300;">Post Goods Issue (to Sub-Store)</h4>
+                <div class="card" style="max-width: 600px;">
+                    <div class="card-header border-bottom-0"><i class="bi bi-check-circle-fill text-success"></i> Strict FEFO Enforced</div>
+                    <div class="card-body bg-light">
+                        <form id="formGI">
+                            <div class="mb-3">
+                                <label class="form-label">Select Valid Batch (FEFO Sorted) *</label>
+                                <select id="giBatch" class="form-select" required></select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Quantity to Issue *</label>
+                                <input type="number" id="giQty" class="form-control" placeholder="Enter quantity" required>
+                            </div>
+                            <button type="submit" class="btn btn-sap w-100 py-2">Execute Issue</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
+            <div class="tab-pane fade" id="tab-master" role="tabpanel">
+                <h4 class="mb-4" style="color: #32363A; font-weight: 300;">System Configuration</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">Maintain Vendor (Supplier)</div>
+                            <div class="card-body">
+                                <form id="formSup">
+                                    <div class="mb-2"><input type="text" id="sName" class="form-control" placeholder="Vendor Name" required></div>
+                                    <div class="mb-2"><input type="text" id="sInitial" class="form-control" placeholder="Vendor Code (3 Letters)" maxlength="3" required></div>
+                                    <div class="mb-3">
+                                        <select id="sOrigin" class="form-select"><option value="Lokal">Local</option><option value="Interlokal">Import</option></select>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">Save Vendor</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">Maintain MSDN (Material)</div>
+                            <div class="card-body">
+                                <form id="formMSDN">
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6"><input type="text" id="mCode" class="form-control" placeholder="Material Code" required></div>
+                                        <div class="col-6"><input type="text" id="mName" class="form-control" placeholder="Description" required></div>
+                                        <div class="col-6">
+                                            <select id="mAllergen" class="form-select"><option value="Tidak">Non-Allergen</option><option value="Ya">Allergen Material</option></select>
+                                        </div>
+                                        <div class="col-6"><input type="text" id="mOrigin" class="form-control" placeholder="Country of Origin"></div>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">Save Material</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning">
+                <h6 class="modal-title fw-bold"><i class="bi bi-shield-check"></i> QC Clearance: Import Material</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="importModalBody"></div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-dark w-100" data-bs-dismiss="modal">Acknowledge & Proceed</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="modal fade" id="printModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-primary">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">GR Berhasil! Cetak Label Label</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header text-white" style="background-color: var(--sap-accent);">
+                <h6 class="modal-title">Document Posted</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body text-center">
-                <h4 id="printBatchID" class="fw-bold text-success mb-3"></h4>
-                <p class="small text-muted">Pastikan printer Bluetooth (Thermal) dalam kondisi menyala.</p>
-                <button class="btn btn-dark w-100 py-3 fw-bold" onclick="printBluetoothLabel()"><h5 class="m-0">🖨️ CETAK VIA BLUETOOTH</h5></button>
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-upc-scan text-secondary mb-2" style="font-size: 3rem;"></i>
+                <div class="small text-muted text-uppercase mb-1">Batch Generated</div>
+                <h5 id="printBatchID" class="fw-bold mb-4"></h5>
+                <button class="btn btn-outline-dark w-100" onclick="printBluetoothLabel()"><i class="bi bi-printer-fill"></i> Print Label</button>
             </div>
         </div>
     </div>
@@ -147,207 +359,169 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // DATA PERSISTENCE
-    let suppliers = JSON.parse(localStorage.getItem('wms_s')) || [];
-    let msdn = JSON.parse(localStorage.getItem('wms_m')) || [];
+    // --- UI/UX INTERACTIONS ---
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+        document.getElementById('mobileOverlay').classList.toggle('show');
+    }
+
+    // --- DATA STATE ---
+    let suppliers = JSON.parse(localStorage.getItem('wms_s')) || [{name: 'CV Lokal', initial: 'CVL', origin: 'Lokal'}];
+    let msdn = JSON.parse(localStorage.getItem('wms_m')) || [{code: 'RM-TEST', name: 'Raw Material 01', allergen: 'Tidak'}];
     let stockBatches = JSON.parse(localStorage.getItem('wms_gr')) || [];
     let giLog = JSON.parse(localStorage.getItem('wms_gi')) || [];
     let currentPrintBatch = "";
-
-    let printModal;
+    
+    let importModal, printModal;
     document.addEventListener('DOMContentLoaded', () => {
+        importModal = new bootstrap.Modal(document.getElementById('importModal'));
         printModal = new bootstrap.Modal(document.getElementById('printModal'));
         refreshUI();
     });
 
-    // --- FITUR 1: UPDATE DASHBOARD INTERAKTIF ---
-    function updateDashboard() {
-        let totalRM = 0, totalPM = 0;
-        let today = new Date().toISOString().split('T')[0];
-        let grToday = 0, giToday = 0;
-        let alertsHTML = '';
+    // --- MASTER DATA LOGIC ---
+    document.getElementById('formSup').onsubmit = function(e) {
+        e.preventDefault();
+        suppliers.push({ name: document.getElementById('sName').value, initial: document.getElementById('sInitial').value.toUpperCase(), origin: document.getElementById('sOrigin').value });
+        localStorage.setItem('wms_s', JSON.stringify(suppliers));
+        this.reset(); alert('Vendor Saved.'); refreshUI();
+    };
 
-        stockBatches.forEach(b => {
-            // Hitung Total Stok berdasarkan tipe di MSDN
-            const mat = msdn.find(m => m.code === b.mat);
-            if(mat && b.qtyCurrent > 0) {
-                if(mat.code.startsWith('RM')) totalRM += b.qtyCurrent;
-                if(mat.code.startsWith('PM')) totalPM += b.qtyCurrent;
+    document.getElementById('formMSDN').onsubmit = function(e) {
+        e.preventDefault();
+        msdn.push({ code: document.getElementById('mCode').value, name: document.getElementById('mName').value, allergen: document.getElementById('mAllergen').value, origin: document.getElementById('mOrigin').value });
+        localStorage.setItem('wms_m', JSON.stringify(msdn));
+        this.reset(); alert('Material Master Updated.'); refreshUI();
+    };
+
+    // --- QC VERIFICATION ---
+    function checkImport() {
+        const matCode = document.getElementById('grMat').value;
+        const originType = document.getElementById('grOrigin').value;
+        
+        if (originType === 'Import' && matCode) {
+            const mat = msdn.find(m => m.code === matCode);
+            if(mat) {
+                document.getElementById('importModalBody').innerHTML = `
+                    <div class="mb-2 text-muted small">System requires visual verification against physical CoA before posting GR for imported goods.</div>
+                    <table class="table table-sm table-bordered">
+                        <tr><td class="bg-light w-50">Material</td><td class="fw-bold">${mat.name}</td></tr>
+                        <tr><td class="bg-light">Origin Config</td><td>${mat.origin || 'N/A'}</td></tr>
+                        <tr><td class="bg-light">Allergen Risk</td><td><span class="badge ${mat.allergen === 'Ya' ? 'bg-danger' : 'bg-success'}">${mat.allergen}</span></td></tr>
+                    </table>
+                `;
+                importModal.show();
             }
-            
-            // Hitung GR Hari ini
-            if(b.grDate === today) grToday++;
-
-            // Cek Expired (Warning jika sisa < 30 Hari)
-            if(b.qtyCurrent > 0 && b.exp) {
-                const daysToExpire = (new Date(b.exp) - new Date()) / (1000 * 3600 * 24);
-                if(daysToExpire < 30 && daysToExpire > 0) {
-                    alertsHTML += `<li class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
-                        Batch ${b.batchID} <span class="badge bg-danger rounded-pill">Sisa ${Math.ceil(daysToExpire)} Hari</span>
-                    </li>`;
-                } else if(daysToExpire <= 0) {
-                    alertsHTML += `<li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
-                        Batch ${b.batchID} <span class="badge bg-dark rounded-pill">EXPIRED!</span>
-                    </li>`;
-                }
-            }
-        });
-
-        // Hitung GI Hari ini
-        giLog.forEach(g => { if(g.date.startsWith(today)) giToday++; });
-
-        document.getElementById('dashRM').innerText = totalRM;
-        document.getElementById('dashPM').innerText = totalPM;
-        document.getElementById('dashGRToday').innerText = grToday;
-        document.getElementById('dashGIToday').innerText = giToday;
-        document.getElementById('dashAlerts').innerHTML = alertsHTML || '<li class="list-group-item text-success">Stok aman, tidak ada yang mendekati expired.</li>';
+        }
     }
 
-    // --- LOGIKA GR DENGAN TRIGGER PRINTER ---
+    // --- GR LOGIC ---
     document.getElementById('formGR').onsubmit = function(e) {
         e.preventDefault();
         const matCode = document.getElementById('grMat').value;
         const supInit = document.getElementById('grSup').value;
         const rawDate = document.getElementById('grDate').value;
-        const yymmdd = rawDate.replace(/-/g, '').slice(2);
-        const random = Math.floor(100 + Math.random() * 900);
-        
-        const batchID = `${matCode}-${supInit}_${yymmdd}-${random}`;
+        const batchID = `${matCode}-${supInit}_${rawDate.replace(/-/g, '').slice(2)}-${Math.floor(100+Math.random()*900)}`;
 
-        stockBatches.push({
-            batchID: batchID, mat: matCode, 
-            qtyCurrent: parseFloat(document.getElementById('grQty').value),
-            exp: document.getElementById('grExp').value, grDate: rawDate
-        });
-        
+        stockBatches.push({ batchID, mat: matCode, qtyCurrent: parseFloat(document.getElementById('grQty').value), exp: document.getElementById('grExp').value, grDate: rawDate });
         localStorage.setItem('wms_gr', JSON.stringify(stockBatches));
         
-        // Simpan ID untuk diprint, lalu panggil modal
         currentPrintBatch = batchID;
         document.getElementById('printBatchID').innerText = batchID;
         printModal.show();
-        
         this.reset(); refreshUI();
     };
 
-    // --- LOGIKA GI DENGAN STRICT FEFO ---
+    // --- GI LOGIC (FEFO) ---
     document.getElementById('formGI').onsubmit = function(e) {
         e.preventDefault();
         const selectedID = document.getElementById('giBatch').value;
         const qtyReq = parseFloat(document.getElementById('giQty').value);
         const target = stockBatches.find(b => b.batchID === selectedID);
         
-        const elderBatch = stockBatches
-            .filter(b => b.mat === target.mat && b.qtyCurrent > 0)
-            .sort((a, b) => new Date(a.exp) - new Date(b.exp))[0];
+        const elderBatch = stockBatches.filter(b => b.mat === target.mat && b.qtyCurrent > 0).sort((a, b) => new Date(a.exp) - new Date(b.exp))[0];
 
         if (elderBatch.batchID !== selectedID) {
-            alert(`⛔ PELANGGARAN FEFO!\nGunakan Batch tertua: ${elderBatch.batchID}`); return;
+            alert(`[SYSTEM BLOCK] FEFO Violation.\nPlease consume batch: ${elderBatch.batchID}`); return;
         }
-        if (target.qtyCurrent < qtyReq) { alert("Stok kurang!"); return; }
+        if (target.qtyCurrent < qtyReq) { alert("Insufficient Stock."); return; }
 
         target.qtyCurrent -= qtyReq;
         giLog.push({ id: 'GI-'+Date.now(), ref: selectedID, qty: qtyReq, date: new Date().toISOString() });
         
         localStorage.setItem('wms_gr', JSON.stringify(stockBatches));
         localStorage.setItem('wms_gi', JSON.stringify(giLog));
-        
-        alert("GI Sukses!"); this.reset(); refreshUI();
+        alert("GI Posted successfully."); this.reset(); refreshUI();
     };
 
-    // --- FITUR 2: BLUETOOTH PRINTER (WEB BLUETOOTH API) ---
-    async function printBluetoothLabel() {
-        if (!navigator.bluetooth) {
-            alert("Perangkat atau browser Anda tidak mendukung Web Bluetooth API. Gunakan Google Chrome/Edge.");
-            return;
-        }
-        try {
-            // Meminta koneksi ke perangkat Bluetooth
-            const device = await navigator.bluetooth.requestDevice({
-                acceptAllDevices: true,
-                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] // UUID Layanan standar ESC/POS Thermal Printer
-            });
+    // --- DASHBOARD & RENDER LOGIC ---
+    function refreshUI() {
+        let totalRM = 0, totalPM = 0, alertsHTML = '', tableHTML = '';
+        const today = new Date().toISOString().split('T')[0];
+        
+        // 1. Update Dropdowns
+        document.getElementById('grSup').innerHTML = '<option value="">Select Vendor...</option>' + suppliers.map(s => `<option value="${s.initial}">${s.initial} - ${s.name}</option>`).join('');
+        document.getElementById('grMat').innerHTML = '<option value="">Select Material...</option>' + msdn.map(m => `<option value="${m.code}">[${m.code}] ${m.name}</option>`).join('');
+        
+        const activeStock = stockBatches.filter(b => b.qtyCurrent > 0).sort((a, b) => new Date(a.exp) - new Date(b.exp));
+        document.getElementById('giBatch').innerHTML = '<option value="">Select Target Batch...</option>' + activeStock.map(b => `<option value="${b.batchID}">${b.batchID} (Stock: ${b.qtyCurrent})</option>`).join('');
+
+        // 2. Compute Dashboard & Table
+        activeStock.forEach(b => {
+            const mat = msdn.find(m => m.code === b.mat);
+            if(mat) { if(mat.code.startsWith('RM')) totalRM += b.qtyCurrent; else totalPM += b.qtyCurrent; }
             
+            const daysExp = (new Date(b.exp) - new Date()) / 86400000;
+            let statusBadge = `<span class="badge bg-success">Good</span>`;
+            
+            if(daysExp <= 0) {
+                statusBadge = `<span class="badge bg-dark">Expired</span>`;
+                alertsHTML += `<li class="list-group-item d-flex justify-content-between p-2"><span class="small fw-bold">${b.batchID}</span> <span class="badge bg-dark">EXPIRED</span></li>`;
+            } else if(daysExp < 30) {
+                statusBadge = `<span class="badge bg-warning text-dark">${Math.ceil(daysExp)} Days</span>`;
+                alertsHTML += `<li class="list-group-item d-flex justify-content-between p-2"><span class="small">${b.batchID}</span> <span class="badge bg-danger">${Math.ceil(daysExp)} d left</span></li>`;
+            }
+
+            tableHTML += `<tr>
+                <td class="font-monospace text-primary fw-bold" style="font-size:0.85rem;">${b.batchID}</td>
+                <td>${mat ? mat.name : b.mat}</td>
+                <td class="fw-bold">${b.qtyCurrent}</td>
+                <td class="text-muted small">${b.exp}</td>
+                <td>${statusBadge}</td>
+            </tr>`;
+        });
+
+        document.getElementById('dashRM').innerText = totalRM;
+        document.getElementById('dashPM').innerText = totalPM;
+        document.getElementById('dashGRToday').innerText = stockBatches.filter(b => b.grDate === today).length;
+        document.getElementById('dashGIToday').innerText = giLog.filter(g => g.date.startsWith(today)).length;
+        
+        document.getElementById('dashAlerts').innerHTML = alertsHTML || '<li class="list-group-item text-muted small p-2">No critical warnings.</li>';
+        document.getElementById('stockTableBody').innerHTML = tableHTML || '<tr><td colspan="5" class="text-center text-muted">No inventory data found.</td></tr>';
+    }
+
+    // --- BLUETOOTH & MAILTO ---
+    async function printBluetoothLabel() {
+        if (!navigator.bluetooth) { alert("Web Bluetooth API not supported on this browser."); return; }
+        try {
+            const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
             const server = await device.gatt.connect();
             const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
             const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-
-            // Format teks (ESC/POS command)
-            const textToPrint = `\nPT AGRI WANGI INDONESIA\n--------------------\nBATCH ID:\n${currentPrintBatch}\n--------------------\n\n\n`;
-            
-            const encoder = new TextEncoder();
-            await characteristic.writeValue(encoder.encode(textToPrint));
-            
-            alert("Berhasil mencetak ke " + device.name);
-            device.gatt.disconnect();
-            printModal.hide();
-
-        } catch (error) {
-            console.error(error);
-            alert("Koneksi Bluetooth gagal atau dibatalkan.\n\nDetail: " + error.message);
-        }
+            await characteristic.writeValue(new TextEncoder().encode(`\nPT AGRI WANGI INDONESIA\n--------------------\nBATCH ID:\n${currentPrintBatch}\n--------------------\n\n\n`));
+            device.gatt.disconnect(); printModal.hide();
+        } catch (error) { alert("Bluetooth Error: " + error.message); }
     }
 
-    // --- FITUR 3: TUTUP SHIFT & KIRIM EMAIL ---
+    function syncData() { alert("Initiating sync to Cloud SQL Backend..."); }
     function tutupShift() {
-        const today = new Date().toISOString().split('T')[0];
-        
-        let reportText = `LAPORAN SHIFT WMS - ${today}\n============================\n`;
-        
-        reportText += `\n[BARANG MASUK / GR HARI INI]\n`;
-        const grHariIni = stockBatches.filter(b => b.grDate === today);
-        if(grHariIni.length === 0) reportText += "- Tidak ada penerimaan.\n";
-        grHariIni.forEach(b => { reportText += `- ${b.batchID} (Qty: ${b.qtyCurrent})\n`; });
-
-        reportText += `\n[BARANG KELUAR / GI HARI INI]\n`;
-        const giHariIni = giLog.filter(g => g.date.startsWith(today));
-        if(giHariIni.length === 0) reportText += "- Tidak ada pengeluaran.\n";
-        giHariIni.forEach(g => { reportText += `- Batch ${g.ref} dikurangi ${g.qty}\n`; });
-
-        reportText += `\n============================\nDicetak otomatis oleh Sistem WMS Agri Wangi.`;
-
-        // Menggunakan mailto: untuk MVP (Membuka aplikasi email HP)
-        const emailTujuan = "admin.produksi@agriwangi.com"; // Ganti dengan email SPV Anda
-        const subject = encodeURIComponent(`Laporan Shift Gudang RM/PM - ${today}`);
-        const body = encodeURIComponent(reportText);
-        
-        // Trigger Email App
-        window.location.href = `mailto:${emailTujuan}?subject=${subject}&body=${body}`;
+        const email = "admin.produksi@agriwangi.com";
+        window.location.href = `mailto:${email}?subject=WMS Shift Report - ${new Date().toISOString().split('T')[0]}&body=Please review today's inventory movements.`;
     }
 
-    // --- HELPER FUNCTIONS ---
-    function refreshUI() {
-        // Populasikan Dropdown
-        document.getElementById('grSup').innerHTML = suppliers.map(s => `<option value="${s.initial}">${s.name}</option>`).join('');
-        document.getElementById('grMat').innerHTML = msdn.map(m => `<option value="${m.code}">${m.name}</option>`).join('');
-        
-        const sortedStock = [...stockBatches].filter(b => b.qtyCurrent > 0).sort((a, b) => new Date(a.exp) - new Date(b.exp));
-        document.getElementById('giBatch').innerHTML = '<option value="">-- Pilih Batch --</option>' + 
-            sortedStock.map(b => `<option value="${b.batchID}">${b.batchID} (Sisa: ${b.qtyCurrent})</option>`).join('');
-
-        updateDashboard();
-    }
-
-    function renderStockLog() {
-        const list = document.getElementById('stockList');
-        list.innerHTML = sortedStock = [...stockBatches].filter(b => b.qtyCurrent > 0).map(b => `
-            <div class="card p-2 border-primary mb-2 shadow-sm">
-                <div class="fw-bold text-primary">${b.batchID}</div>
-                <div class="d-flex justify-content-between small text-muted">
-                    <span>Sisa: <strong class="text-dark">${b.qtyCurrent}</strong></span>
-                    <span>Exp: ${b.exp}</span>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Data Dummy untuk Test
-    function injectDummyData() {
-        suppliers = [{name: 'CV Daun Teh', initial: 'DTH', origin: 'Lokal'}];
-        msdn = [{code: 'RM-TEA-01', name: 'Black Tea', allergen: 'Tidak', origin: 'Lokal', maker: '-'}];
-        localStorage.setItem('wms_s', JSON.stringify(suppliers));
-        localStorage.setItem('wms_m', JSON.stringify(msdn));
-        alert('Data Dummy Master dimasukkan!'); refreshUI();
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
     }
 </script>
 </body>
