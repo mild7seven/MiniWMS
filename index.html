@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WMS ERP - Management System</title>
+    <title>WMS ERP - PT Agri Wangi</title>
     
-    <meta name="description" content="SAP-style WMS Hybrid untuk pelacakan RM dan PM.">
     <meta name="theme-color" content="#1C2228">
     <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/1C2228/FFFFFF?text=WMS">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     
@@ -26,39 +21,30 @@
         body { background-color: var(--sap-bg); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         
         /* LOGIN SCREEN */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(135deg, #1C2228 0%, #354A5F 100%);
-            display: flex; justify-content: center; align-items: center; z-index: 9999;
-        }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #1C2228 0%, #354A5F 100%); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-card { background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 90%; max-width: 400px; }
 
-        /* LAYOUT STRUCTURE */
+        /* LAYOUT */
         #wrapper { display: none; width: 100vw; height: 100vh; overflow: hidden; }
         #sidebar { width: 260px; background-color: var(--sap-sidebar); color: #fff; display: flex; flex-direction: column; transition: 0.3s; z-index: 1040; }
         .sidebar-header { padding: 20px; background: rgba(0,0,0,0.2); font-weight: bold; }
         .nav-link { color: #A9B4BE; padding: 12px 20px; border-left: 4px solid transparent; cursor: pointer; border-radius: 0; }
         .nav-link:hover, .nav-link.active { color: #fff; background: var(--sap-sidebar-hover); }
         .nav-link.active { border-left-color: var(--sap-accent); font-weight: bold; }
-        .nav-link i { margin-right: 12px; }
         
         #main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         .topbar { background: var(--sap-header); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; min-height: 56px; }
 
-        /* ERP COMPONENTS */
         .sap-tile { background: #fff; padding: 20px; border-radius: 8px; border-bottom: 4px solid var(--sap-accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); height: 100%; }
         .tile-val { font-size: 2rem; font-weight: 300; color: #32363A; }
         .card { border: none; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .card-header { background: #fff; font-weight: bold; border-bottom: 1px solid #eee; }
+        
+        .table-erp th { white-space: nowrap; font-size: 0.85rem; background-color: #E4E5E7; }
+        .table-erp td { vertical-align: middle; font-size: 0.85rem; }
 
-        /* MOBILE OVERLAY */
         .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1030; }
-
-        @media (max-width: 768px) {
-            #sidebar { position: fixed; left: -260px; height: 100%; }
-            #sidebar.show { left: 0; }
-            .mobile-overlay.show { display: block; }
-        }
+        @media (max-width: 768px) { #sidebar { position: fixed; left: -260px; height: 100%; } #sidebar.show { left: 0; } .mobile-overlay.show { display: block; } }
     </style>
 </head>
 <body>
@@ -66,221 +52,184 @@
 <div id="login-screen">
     <div class="login-card text-center">
         <h4 class="fw-bold company-name-display">WMS ERP LOGIN</h4>
-        <p class="text-muted small company-address-display">Warehouse Management System</p>
         <form id="formLogin" class="mt-4 text-start">
-            <div class="mb-3">
-                <label class="form-label small fw-bold">ID AKUN</label>
-                <input type="text" id="loginId" class="form-control" required placeholder="Cth: dimas">
-            </div>
-            <div class="mb-4">
-                <label class="form-label small fw-bold">PASSWORD</label>
-                <input type="password" id="loginPass" class="form-control" required placeholder="******">
-            </div>
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold text-uppercase">Masuk</button>
-            <div class="mt-4 p-2 bg-light rounded text-center" style="font-size: 0.7rem;">
-                <strong>SU:</strong> dimas / su2026 | <strong>ADM:</strong> stafrm / staf123
-            </div>
+            <div class="mb-3"><label class="form-label small fw-bold">ID AKUN</label><input type="text" id="loginId" class="form-control" required></div>
+            <div class="mb-4"><label class="form-label small fw-bold">PASSWORD</label><input type="password" id="loginPass" class="form-control" required></div>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">MASUK</button>
         </form>
     </div>
 </div>
 
 <div id="wrapper">
     <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
-
     <nav id="sidebar">
-        <div class="sidebar-header"><i class="bi bi-box-seam-fill text-primary"></i> ERP AGILE</div>
-        <div class="p-3 pb-0 small text-uppercase text-secondary fw-bold">Logistic Execution</div>
+        <div class="sidebar-header">WMS AGILE</div>
         <ul class="nav flex-column mb-auto mt-2" role="tablist">
-            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-dash"><i class="bi bi-speedometer2"></i> Launchpad</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gr"><i class="bi bi-box-arrow-in-right"></i> Inbound (GR)</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gi"><i class="bi bi-box-arrow-up-right"></i> Outbound (GI)</a></li>
-            
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-dash"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gr"><i class="bi bi-box-arrow-in-right"></i> Goods Receipt</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-gi"><i class="bi bi-box-arrow-up-right"></i> Goods Issue</a></li>
             <div id="menu-su-only">
                 <div class="p-3 pb-0 small text-uppercase text-secondary fw-bold mt-2">Admin Panel</div>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-master"><i class="bi bi-database-fill-gear"></i> Master Data</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-setup"><i class="bi bi-gear-wide-connected"></i> Company Setup</a></li>
             </div>
         </ul>
         <div class="p-3 border-top border-secondary bg-dark bg-opacity-25">
             <div class="small fw-bold" id="displayUserName">User</div>
-            <div class="badge bg-primary" id="displayUserRole" style="font-size: 0.6rem;">Role</div>
+            <div class="badge bg-primary" id="displayUserRole">Role</div>
         </div>
     </nav>
 
     <main id="main-content">
         <header class="topbar">
-            <div class="d-flex align-items-center text-truncate">
+            <div class="d-flex align-items-center">
                 <button class="btn btn-link text-white d-md-none p-0 me-2" onclick="toggleSidebar()"><i class="bi bi-list fs-4"></i></button>
-                <span class="fw-bold company-name-display text-truncate">WMS ERP</span>
+                <span class="fw-bold company-name-display">WMS ERP</span>
             </div>
-            <div class="d-flex gap-2">
-                <button class="topbar-btn border-0 bg-warning text-dark fw-bold px-3" onclick="tutupShift()"><i class="bi bi-envelope"></i> Shift Report</button>
-                <button class="topbar-btn bg-danger border-0" onclick="logout()"><i class="bi bi-power"></i></button>
-            </div>
+            <button class="topbar-btn bg-danger border-0" onclick="logout()"><i class="bi bi-power"></i></button>
         </header>
 
         <div class="p-3 p-md-4 tab-content flex-grow-1">
+            
             <div class="tab-pane fade show active" id="tab-dash">
                 <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-3"><div class="sap-tile"><h6>STOK RM</h6><div class="tile-val" id="dashRM">0</div></div></div>
-                    <div class="col-6 col-md-3"><div class="sap-tile"><h6>STOK PM</h6><div class="tile-val" id="dashPM">0</div></div></div>
-                    <div class="col-6 col-md-3"><div class="sap-tile" style="border-color:#107E3E"><h6>GR HARI INI</h6><div class="tile-val" id="dashGRToday">0</div></div></div>
-                    <div class="col-6 col-md-3"><div class="sap-tile" style="border-color:#E9730C"><h6>GI HARI INI</h6><div class="tile-val" id="dashGIToday">0</div></div></div>
+                    <div class="col-6 col-md-3"><div class="sap-tile"><h6>STOK TOTAL</h6><div class="tile-val" id="dashTotal">0</div></div></div>
+                    <div class="col-6 col-md-3"><div class="sap-tile" style="border-color:#107E3E"><h6>GR HARI INI</h6><div class="tile-val" id="dashGR">0</div></div></div>
                 </div>
-                <div class="card"><div class="card-header bg-white">Monitor Stok Batch</div><div class="card-body p-0 table-responsive">
-                    <table class="table table-hover mb-0 align-middle"><thead class="table-light"><tr><th>Batch ID</th><th>Stok</th><th>Exp</th></tr></thead><tbody id="stockTable"></tbody></table>
-                </div></div>
             </div>
 
             <div class="tab-pane fade" id="tab-gr">
-                <h4>Good Receipt</h4>
-                <div class="card mb-4"><div class="card-body">
+                <h4>Post Goods Receipt</h4>
+                <div class="card"><div class="card-body">
                     <form id="formGR">
-                        <div class="row g-2">
-                            <div class="col-md-6"><label class="small fw-bold">Material</label><select id="grMat" class="form-select" required></select></div>
-                            <div class="col-md-6"><label class="small fw-bold">Supplier</label><select id="grSup" class="form-select" required></select></div>
-                            <div class="col-md-4"><label class="small fw-bold">Tgl Terima</label><input type="date" id="grDate" class="form-control" required></div>
-                            <div class="col-md-4"><label class="small fw-bold">Qty Masuk</label><input type="number" id="grQty" class="form-control" required></div>
-                            <div class="col-md-4"><label class="small fw-bold">Tgl Expired</label><input type="date" id="grExp" class="form-control" required></div>
+                        <div class="row g-3">
+                            <div class="col-md-4"><label class="small fw-bold">Kode Barang</label><select id="grMatCode" class="form-select" onchange="autoFillGR()" required></select></div>
+                            <div class="col-md-4"><label class="small fw-bold">Nama Barang</label><input type="text" id="grMatName" class="form-control bg-light" readonly></div>
+                            <div class="col-md-4"><label class="small fw-bold">Nama Supplier</label><select id="grSup" class="form-select" required></select></div>
+                            <div class="col-md-3"><label class="small fw-bold">Qty Masuk</label><input type="number" id="grQty" class="form-control" step="0.01" required></div>
+                            <div class="col-md-3"><label class="small fw-bold">Satuan Qty</label>
+                                <select id="grUnit" class="form-select" required>
+                                    <option value="Pcs">Pcs</option><option value="KG">KG</option><option value="G">G</option>
+                                    <option value="T">T (Ton)</option><option value="M">M</option><option value="Km">Km</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2"><label class="small fw-bold">Tanggal Masuk</label><input type="date" id="grDate" class="form-control" required></div>
+                            <div class="col-md-2"><label class="small fw-bold">No. DO</label><input type="text" id="grDO" class="form-control" required></div>
+                            <div class="col-md-2"><label class="small fw-bold">No. PO</label><input type="text" id="grPO" class="form-control" required></div>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3 w-100 fw-bold">PROSES GR & BUAT BATCH</button>
+                        <button type="submit" class="btn btn-primary mt-4 fw-bold px-4">POST GR & GENERATE KODE UNIK</button>
                     </form>
-                </div></div>
-                <div class="card"><div class="card-header bg-info text-white">Maintenance Transaksi GR</div><div class="card-body p-0 table-responsive">
-                    <table class="table table-sm mb-0"><thead><tr class="table-light"><th>Batch ID</th><th>Sisa</th><th>Action</th></tr></thead><tbody id="grHistory"></tbody></table>
                 </div></div>
             </div>
 
             <div class="tab-pane fade" id="tab-gi">
-                <h4>Good Issue (Strict FEFO)</h4>
+                <h4>Good Issue</h4>
                 <div class="card" style="max-width: 500px;"><div class="card-body">
                     <form id="formGI">
-                        <div class="mb-3"><label class="small fw-bold">Pilih Batch (Wajib Tertua)</label><select id="giBatch" class="form-select" required></select></div>
-                        <div class="mb-3"><label class="small fw-bold">Quantity Issue</label><input type="number" id="giQty" class="form-control" required></div>
-                        <button type="submit" class="btn btn-warning w-100 fw-bold">EXECUTE GOOD ISSUE</button>
+                        <div class="mb-3"><label class="small fw-bold">Pilih Kode Unik / Batch</label><select id="giBatch" class="form-select" required></select></div>
+                        <div class="mb-3"><label class="small fw-bold">Qty Keluar</label><input type="number" id="giQty" class="form-control" required></div>
+                        <button type="submit" class="btn btn-warning w-100 fw-bold">PROSES GI</button>
                     </form>
                 </div></div>
             </div>
 
             <div class="tab-pane fade" id="tab-master">
                 <h4>Master Data Management</h4>
-                <div class="row g-3 mt-2">
-                    <div class="col-md-5">
-                        <div class="card h-100">
-                            <div class="card-header bg-white">Master Supplier</div>
-                            <div class="card-body">
-                                <form id="formSup" class="mb-3">
-                                    <input type="text" id="sName" placeholder="Nama" class="form-control mb-2" required>
-                                    <input type="text" id="sInit" placeholder="Inisial (3 Huruf)" class="form-control mb-2" maxlength="3" required>
-                                    <button class="btn btn-primary btn-sm w-100">Simpan Supplier</button>
-                                </form>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-striped">
-                                        <thead class="table-light"><tr><th>ID</th><th>Nama Supplier</th></tr></thead>
-                                        <tbody id="tableSupplier"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Master Supplier</span>
+                        <button class="btn btn-sm btn-primary" onclick="openModalSup()"><i class="bi bi-plus-lg"></i> Tambah Supplier</button>
                     </div>
-                    <div class="col-md-7">
-                        <div class="card h-100">
-                            <div class="card-header bg-white">Master MSDN (Material)</div>
-                            <div class="card-body">
-                                <form id="formMSDN" class="mb-3">
-                                    <div class="row g-2 mb-2"><div class="col-4"><input type="text" id="mCode" placeholder="Kode" class="form-control" required></div><div class="col-8"><input type="text" id="mName" placeholder="Nama" class="form-control" required></div></div>
-                                    <button class="btn btn-primary btn-sm w-100">Simpan Material</button>
-                                </form>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-striped">
-                                        <thead class="table-light"><tr><th>Kode</th><th>Nama Material</th></tr></thead>
-                                        <tbody id="tableMSDN"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card-body p-0 table-responsive">
+                        <table class="table table-hover table-erp mb-0">
+                            <thead><tr><th>Nama Supplier</th><th>Inisial</th><th>Komoditi</th><th class="text-center">Aksi</th></tr></thead>
+                            <tbody id="tblSup"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Master MSDN</span>
+                        <button class="btn btn-sm btn-primary" onclick="openModalMSDN()"><i class="bi bi-plus-lg"></i> Tambah MSDN</button>
+                    </div>
+                    <div class="card-body p-0 table-responsive">
+                        <table class="table table-hover table-erp mb-0">
+                            <thead><tr>
+                                <th>Kode</th><th>Nama Barang</th><th>Supplier</th><th>Asal Sup.</th>
+                                <th>Produsen</th><th>Asal Prod.</th><th>Allergen</th><th>Bahan Allergen</th><th>Halal</th><th class="text-center">Aksi</th>
+                            </tr></thead>
+                            <tbody id="tblMSDN"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="tab-setup">
-                <h4>Company Configuration</h4>
-                <div class="card mt-3" style="max-width: 600px;">
-                    <div class="card-header bg-white">Identitas Perusahaan</div>
-                    <div class="card-body">
-                        <form id="formSetup">
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Nama Perusahaan</label>
-                                <input type="text" id="setupCompName" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Alamat Perusahaan</label>
-                                <textarea id="setupCompAddr" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success fw-bold px-4">Update Profile</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
 </div>
 
-<div class="modal fade" id="editModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header bg-warning"><h5>Koreksi Transaksi GR</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
-    <div class="modal-body"><form id="formEdit">
-        <input type="hidden" id="eBatchID">
-        <div class="mb-2"><label>Koreksi Qty</label><input type="number" id="eQty" class="form-control" required></div>
-        <div class="mb-2"><label>Koreksi Expired</label><input type="date" id="eExp" class="form-control" required></div>
-        <button class="btn btn-success w-100 mt-3">UPDATE BATCH</button>
+<div class="modal fade" id="modalSup" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header bg-light"><h5 class="modal-title" id="supModalTitle">Tambah Supplier</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body"><form id="formModalSup">
+        <input type="hidden" id="supId">
+        <div class="mb-2"><label class="small fw-bold">Nama Supplier</label><input type="text" id="supName" class="form-control" required></div>
+        <div class="mb-2"><label class="small fw-bold">Inisial</label><input type="text" id="supInit" class="form-control" maxlength="5" required></div>
+        <div class="mb-3"><label class="small fw-bold">Komoditi</label><input type="text" id="supCom" class="form-control" required></div>
+        <button type="submit" class="btn btn-primary w-100">SIMPAN SUPPLIER</button>
+    </form></div>
+</div></div></div>
+
+<div class="modal fade" id="modalMSDN" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+    <div class="modal-header bg-light"><h5 class="modal-title" id="msdnModalTitle">Tambah MSDN</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body"><form id="formModalMSDN">
+        <input type="hidden" id="msdnId">
+        <div class="row g-2 mb-2">
+            <div class="col-md-4"><label class="small fw-bold">Kode Barang</label><input type="text" id="mCode" class="form-control" required></div>
+            <div class="col-md-8"><label class="small fw-bold">Nama Barang</label><input type="text" id="mName" class="form-control" required></div>
+            <div class="col-md-6"><label class="small fw-bold">Nama Supplier</label><select id="mSup" class="form-select" required></select></div>
+            <div class="col-md-6"><label class="small fw-bold">Asal Supplier</label><input type="text" id="mAsalSup" class="form-control" placeholder="Cth: Jakarta" required></div>
+            <div class="col-md-6"><label class="small fw-bold">Nama Produsen</label><input type="text" id="mProd" class="form-control" required></div>
+            <div class="col-md-6"><label class="small fw-bold">Asal Produsen</label><input type="text" id="mAsalProd" class="form-control" required></div>
+            <div class="col-md-4"><label class="small fw-bold">Sertifikasi Halal</label><select id="mHalal" class="form-select"><option value="Ya">Ya</option><option value="Tidak">Tidak</option></select></div>
+            <div class="col-md-4"><label class="small fw-bold">Status Allergen</label><select id="mAllergen" class="form-select" onchange="toggleAllergen()"><option value="Non-Allergen">Non-Allergen</option><option value="Allergen">Allergen</option></select></div>
+            <div class="col-md-4" id="divBahanAllergen" style="display:none;"><label class="small fw-bold">Bahan Allergen</label><input type="text" id="mBahanAllergen" class="form-control" placeholder="Cth: Kacang, Susu"></div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mt-2">SIMPAN MSDN</button>
     </form></div>
 </div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // --- AUTH & STATE ---
+    // --- STATE & AUTH ---
     const accounts = [
         { id: 'dimas', pass: 'su2026', nama: 'Dimas Pratomo', role: 'SU' },
-        { id: 'stafrm', pass: 'staf123', nama: 'Staf Gudang', role: 'ADM' }
+        { id: 'stafrm', pass: 'staf123', nama: 'Admin Gudang', role: 'ADM' }
     ];
 
     let user = JSON.parse(localStorage.getItem('wms_session')) || null;
-    let compInfo = JSON.parse(localStorage.getItem('wms_company')) || { name: 'PT Agri Wangi Indonesia', address: 'Bogor, Jawa Barat' };
-    let sList = JSON.parse(localStorage.getItem('wms_s')) || [{name:'CV Contoh', initial:'CVC'}];
-    let mList = JSON.parse(localStorage.getItem('wms_m')) || [{code:'RM-01', name:'Teh Hitam'}];
+    let sList = JSON.parse(localStorage.getItem('wms_sup')) || [];
+    let mList = JSON.parse(localStorage.getItem('wms_msdn')) || [];
     let stocks = JSON.parse(localStorage.getItem('wms_gr')) || [];
-    let giLog = JSON.parse(localStorage.getItem('wms_gi')) || [];
-    let modalEdit;
+    
+    let modalSup, modalMSDN;
 
     document.addEventListener('DOMContentLoaded', () => {
-        modalEdit = new bootstrap.Modal(document.getElementById('editModal'));
+        modalSup = new bootstrap.Modal(document.getElementById('modalSup'));
+        modalMSDN = new bootstrap.Modal(document.getElementById('modalMSDN'));
         
-        // Sidebar Auto-close logic for Mobile
         document.querySelectorAll('#sidebar .nav-link').forEach(link => {
             link.addEventListener('click', () => { if(window.innerWidth <= 768) toggleSidebar(); });
         });
-
         checkAuth();
     });
-
-    // --- SETUP LOGIC ---
-    document.getElementById('formSetup').onsubmit = function(e) {
-        e.preventDefault();
-        compInfo.name = document.getElementById('setupCompName').value;
-        compInfo.address = document.getElementById('setupCompAddr').value;
-        localStorage.setItem('wms_company', JSON.stringify(compInfo));
-        alert('Data Perusahaan Berhasil Diperbarui!');
-        refreshUI();
-    };
 
     // --- AUTH LOGIC ---
     document.getElementById('formLogin').onsubmit = (e) => {
         e.preventDefault();
         const acc = accounts.find(a => a.id === document.getElementById('loginId').value && a.pass === document.getElementById('loginPass').value);
-        if(acc) { 
-            localStorage.setItem('wms_session', JSON.stringify({ nama: acc.nama, role: acc.role })); 
-            location.reload(); 
-        } else alert('ID atau Password salah!');
+        if(acc) { localStorage.setItem('wms_session', JSON.stringify({ nama: acc.nama, role: acc.role })); location.reload(); } 
+        else alert('Login Gagal!');
     };
 
     function checkAuth() {
@@ -290,123 +239,161 @@
             document.getElementById('displayUserName').innerText = user.nama;
             document.getElementById('displayUserRole').innerText = user.role;
             document.getElementById('menu-su-only').style.display = (user.role === 'SU') ? 'block' : 'none';
-            
-            document.getElementById('setupCompName').value = compInfo.name;
-            document.getElementById('setupCompAddr').value = compInfo.address;
             refreshUI();
         }
     }
-
     function logout() { localStorage.removeItem('wms_session'); location.reload(); }
-    function toggleSidebar() { 
-        document.getElementById('sidebar').classList.toggle('show'); 
-        document.getElementById('mobileOverlay').classList.toggle('show');
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); document.getElementById('mobileOverlay').classList.toggle('show'); }
+
+    // --- CRUD SUPPLIER ---
+    function openModalSup(id = null) {
+        document.getElementById('formModalSup').reset();
+        document.getElementById('supId').value = '';
+        document.getElementById('supModalTitle').innerText = 'Tambah Supplier';
+        if(id) {
+            const s = sList.find(x => x.id === id);
+            document.getElementById('supId').value = s.id;
+            document.getElementById('supName').value = s.nama;
+            document.getElementById('supInit').value = s.inisial;
+            document.getElementById('supCom').value = s.komoditi;
+            document.getElementById('supModalTitle').innerText = 'Ubah Supplier';
+        }
+        modalSup.show();
     }
 
-    // --- GR/GI LOGIC ---
+    document.getElementById('formModalSup').onsubmit = function(e) {
+        e.preventDefault();
+        const id = document.getElementById('supId').value;
+        const data = { id: id || Date.now().toString(), nama: document.getElementById('supName').value, inisial: document.getElementById('supInit').value.toUpperCase(), komoditi: document.getElementById('supCom').value };
+        if(id) sList = sList.map(x => x.id === id ? data : x); else sList.push(data);
+        localStorage.setItem('wms_sup', JSON.stringify(sList)); modalSup.hide(); refreshUI();
+    };
+
+    function deleteSup(id) {
+        if(confirm('Hapus Supplier ini?')) { sList = sList.filter(x => x.id !== id); localStorage.setItem('wms_sup', JSON.stringify(sList)); refreshUI(); }
+    }
+
+    // --- CRUD MSDN ---
+    function toggleAllergen() {
+        const val = document.getElementById('mAllergen').value;
+        const div = document.getElementById('divBahanAllergen');
+        const input = document.getElementById('mBahanAllergen');
+        if(val === 'Allergen') { div.style.display = 'block'; input.required = true; } 
+        else { div.style.display = 'none'; input.required = false; input.value = ''; }
+    }
+
+    function openModalMSDN(id = null) {
+        document.getElementById('formModalMSDN').reset();
+        document.getElementById('msdnId').value = '';
+        document.getElementById('mSup').innerHTML = '<option value="">Pilih Supplier...</option>' + sList.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
+        document.getElementById('msdnModalTitle').innerText = 'Tambah MSDN';
+        toggleAllergen();
+        
+        if(id) {
+            const m = mList.find(x => x.id === id);
+            document.getElementById('msdnId').value = m.id;
+            document.getElementById('mCode').value = m.kode; document.getElementById('mName').value = m.nama;
+            document.getElementById('mSup').value = m.supplier; document.getElementById('mAsalSup').value = m.asal_sup;
+            document.getElementById('mProd').value = m.produsen; document.getElementById('mAsalProd').value = m.asal_prod;
+            document.getElementById('mHalal').value = m.halal; document.getElementById('mAllergen').value = m.allergen;
+            document.getElementById('mBahanAllergen').value = m.bahan_allergen || '';
+            document.getElementById('msdnModalTitle').innerText = 'Ubah MSDN';
+            toggleAllergen();
+        }
+        modalMSDN.show();
+    }
+
+    document.getElementById('formModalMSDN').onsubmit = function(e) {
+        e.preventDefault();
+        const id = document.getElementById('msdnId').value;
+        const data = {
+            id: id || Date.now().toString(), kode: document.getElementById('mCode').value, nama: document.getElementById('mName').value,
+            supplier: document.getElementById('mSup').value, asal_sup: document.getElementById('mAsalSup').value,
+            produsen: document.getElementById('mProd').value, asal_prod: document.getElementById('mAsalProd').value,
+            halal: document.getElementById('mHalal').value, allergen: document.getElementById('mAllergen').value,
+            bahan_allergen: document.getElementById('mAllergen').value === 'Allergen' ? document.getElementById('mBahanAllergen').value : '-'
+        };
+        if(id) mList = mList.map(x => x.id === id ? data : x); else mList.push(data);
+        localStorage.setItem('wms_msdn', JSON.stringify(mList)); modalMSDN.hide(); refreshUI();
+    };
+
+    function deleteMSDN(id) {
+        if(confirm('Hapus MSDN ini?')) { mList = mList.filter(x => x.id !== id); localStorage.setItem('wms_msdn', JSON.stringify(mList)); refreshUI(); }
+    }
+
+    // --- LOGIKA GR & GI ---
+    function autoFillGR() {
+        const code = document.getElementById('grMatCode').value;
+        const m = mList.find(x => x.kode === code);
+        document.getElementById('grMatName').value = m ? m.nama : '';
+    }
+
     document.getElementById('formGR').onsubmit = function(e) {
         e.preventDefault();
-        const mat = document.getElementById('grMat').value;
-        const sup = document.getElementById('grSup').value;
-        const d = document.getElementById('grDate').value;
-        const q = parseFloat(document.getElementById('grQty').value);
-        const bID = `${mat}-${sup}_${d.replace(/-/g, '').slice(2)}-${Math.floor(100+Math.random()*900)}`;
+        const matCode = document.getElementById('grMatCode').value;
+        const matName = document.getElementById('grMatName').value;
+        const supName = document.getElementById('grSup').value;
+        const tgl = document.getElementById('grDate').value;
         
-        stocks.push({ batchID: bID, mat, qtyInit: q, qtyCurrent: q, exp: document.getElementById('grExp').value, date: d });
+        // KODE UNIK: Nama_supplier+tanggal_masuk(yymmdd)+kode_random
+        const supClean = supName.replace(/\s+/g, '').toUpperCase(); // Hilangkan spasi pada nama
+        const yymmdd = tgl.replace(/-/g, '').slice(2);
+        const random = Math.floor(1000 + Math.random() * 9000);
+        const kodeUnik = `${supClean}-${yymmdd}-${random}`;
+
+        stocks.push({ 
+            batchID: kodeUnik, kode: matCode, nama: matName, supplier: supName,
+            qty: parseFloat(document.getElementById('grQty').value), satuan: document.getElementById('grUnit').value,
+            tgl_masuk: tgl, do: document.getElementById('grDO').value, po: document.getElementById('grPO').value
+        });
         localStorage.setItem('wms_gr', JSON.stringify(stocks));
-        this.reset(); refreshUI(); alert('Batch Generated: ' + bID);
+        this.reset(); refreshUI(); alert('Berhasil! Kode Unik: ' + kodeUnik);
     };
-
-    function openEdit(id) {
-        const b = stocks.find(x => x.batchID === id);
-        if(b.qtyCurrent < b.qtyInit) return alert('Dilarang! Stok sudah dipakai GI.');
-        document.getElementById('eBatchID').value = b.batchID;
-        document.getElementById('eQty').value = b.qtyInit;
-        document.getElementById('eExp').value = b.exp;
-        modalEdit.show();
-    }
-
-    document.getElementById('formEdit').onsubmit = function(e) {
-        e.preventDefault();
-        const b = stocks.find(x => x.batchID === document.getElementById('eBatchID').value);
-        b.qtyInit = b.qtyCurrent = parseFloat(document.getElementById('eQty').value);
-        b.exp = document.getElementById('eExp').value;
-        localStorage.setItem('wms_gr', JSON.stringify(stocks)); modalEdit.hide(); refreshUI();
-    };
-
-    function deleteGR(id) {
-        const b = stocks.find(x => x.batchID === id);
-        if(b.qtyCurrent < b.qtyInit) return alert('Gagal! Sebagian stok batch ini sudah keluar.');
-        if(confirm('Hapus transaksi ' + id + '?')) {
-            stocks = stocks.filter(x => x.batchID !== id);
-            localStorage.setItem('wms_gr', JSON.stringify(stocks)); refreshUI();
-        }
-    }
 
     document.getElementById('formGI').onsubmit = function(e) {
         e.preventDefault();
-        const bid = document.getElementById('giBatch').value;
-        const q = parseFloat(document.getElementById('giQty').value);
-        const b = stocks.find(x => x.batchID === bid);
-        const elder = stocks.filter(x => x.mat === b.mat && x.qtyCurrent > 0).sort((a,b) => new Date(a.exp)-new Date(b.exp))[0];
-        
-        if(elder.batchID !== bid) return alert('BLOK: Pelanggaran FEFO! Gunakan batch tertua: ' + elder.batchID);
-        if(b.qtyCurrent < q) return alert('Stok batch tidak cukup!');
-
-        b.qtyCurrent -= q;
-        giLog.push({ id: Date.now(), ref: bid, qty: q, date: new Date().toISOString() });
-        localStorage.setItem('wms_gr', JSON.stringify(stocks)); localStorage.setItem('wms_gi', JSON.stringify(giLog));
-        this.reset(); refreshUI(); alert('GI Sukses.');
+        const id = document.getElementById('giBatch').value;
+        const qty = parseFloat(document.getElementById('giQty').value);
+        const b = stocks.find(x => x.batchID === id);
+        if(b.qty < qty) return alert('Stok tidak cukup!');
+        b.qty -= qty; localStorage.setItem('wms_gr', JSON.stringify(stocks)); this.reset(); refreshUI(); alert('GI Sukses!');
     };
 
-    // --- REFRESH UI ---
+    // --- RENDER UI ---
     function refreshUI() {
-        document.querySelectorAll('.company-name-display').forEach(el => el.innerText = compInfo.name);
-        document.querySelectorAll('.company-address-display').forEach(el => el.innerText = compInfo.address);
-
         if(!user) return;
+        document.querySelectorAll('.company-name-display').forEach(el => el.innerText = 'PT Agri Wangi Indonesia');
 
-        // Detail Master Tables
-        document.getElementById('tableSupplier').innerHTML = sList.map(s => `<tr><td class="fw-bold">${s.initial}</td><td>${s.name}</td></tr>`).join('');
-        document.getElementById('tableMSDN').innerHTML = mList.map(m => `<tr><td class="fw-bold text-primary">${m.code}</td><td>${m.name}</td></tr>`).join('');
-        
-        // Dropdowns
-        document.getElementById('grMat').innerHTML = mList.map(m => `<option value="${m.code}">${m.name}</option>`).join('');
-        document.getElementById('grSup').innerHTML = sList.map(s => `<option value="${s.initial}">${s.name}</option>`).join('');
-        
-        const active = stocks.filter(x => x.qtyCurrent > 0).sort((a,b) => new Date(a.exp)-new Date(b.exp));
-        document.getElementById('giBatch').innerHTML = '<option value="">-- Pilih Batch --</option>' + active.map(b => `<option value="${b.batchID}">${b.batchID} (Sisa: ${b.qtyCurrent})</option>`).join('');
-        
-        document.getElementById('stockTable').innerHTML = active.map(b => `<tr><td class="small fw-bold text-primary">${b.batchID}</td><td>${b.qtyCurrent}</td><td>${b.exp}</td></tr>`).join('');
-        
-        document.getElementById('grHistory').innerHTML = stocks.map(b => {
-            const isUsed = b.qtyCurrent < b.qtyInit;
-            return `<tr><td>${b.batchID}</td><td>${b.qtyCurrent}</td><td>
-                <button class="btn btn-sm btn-outline-primary ${isUsed?'disabled':''}" onclick="openEdit('${b.batchID}')"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-outline-danger ${isUsed?'disabled':''}" onclick="deleteGR('${b.batchID}')"><i class="bi bi-trash"></i></button>
-            </td></tr>`;
-        }).join('');
+        // Render Master Supplier
+        document.getElementById('tblSup').innerHTML = sList.map(s => `<tr>
+            <td>${s.nama}</td><td>${s.inisial}</td><td>${s.komoditi}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary py-0" onclick="openModalSup('${s.id}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteSup('${s.id}')"><i class="bi bi-trash"></i></button>
+            </td></tr>`).join('') || '<tr><td colspan="4" class="text-center text-muted">Belum ada data.</td></tr>';
 
-        let r=0, p=0, today = new Date().toISOString().split('T')[0];
-        stocks.forEach(x => { if(x.qtyCurrent>0) { if(x.mat.startsWith('RM')) r+=x.qtyCurrent; else p+=x.qtyCurrent; } });
-        document.getElementById('dashRM').innerText = r; document.getElementById('dashPM').innerText = p;
-        document.getElementById('dashGRToday').innerText = stocks.filter(x => x.date === today).length;
-        document.getElementById('dashGIToday').innerText = giLog.filter(x => x.date.startsWith(today)).length;
+        // Render Master MSDN
+        document.getElementById('tblMSDN').innerHTML = mList.map(m => `<tr>
+            <td class="fw-bold">${m.kode}</td><td>${m.nama}</td><td>${m.supplier}</td><td>${m.asal_sup}</td>
+            <td>${m.produsen}</td><td>${m.asal_prod}</td>
+            <td><span class="badge ${m.allergen === 'Allergen' ? 'bg-danger' : 'bg-success'}">${m.allergen}</span></td>
+            <td>${m.bahan_allergen}</td><td>${m.halal}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary py-0" onclick="openModalMSDN('${m.id}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteMSDN('${m.id}')"><i class="bi bi-trash"></i></button>
+            </td></tr>`).join('') || '<tr><td colspan="10" class="text-center text-muted">Belum ada data.</td></tr>';
+
+        // Populate GR Dropdowns
+        document.getElementById('grMatCode').innerHTML = '<option value="">Pilih Kode...</option>' + mList.map(m => `<option value="${m.kode}">${m.kode} - ${m.nama}</option>`).join('');
+        document.getElementById('grSup').innerHTML = '<option value="">Pilih Supplier...</option>' + sList.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
+        
+        // Populate GI
+        const active = stocks.filter(x => x.qty > 0);
+        document.getElementById('giBatch').innerHTML = '<option value="">Pilih Kode Unik...</option>' + active.map(b => `<option value="${b.batchID}">${b.batchID} (Sisa: ${b.qty} ${b.satuan})</option>`).join('');
+        
+        document.getElementById('dashTotal').innerText = active.reduce((sum, b) => sum + b.qty, 0);
+        document.getElementById('dashGR').innerText = stocks.filter(x => x.tgl_masuk === new Date().toISOString().split('T')[0]).length;
     }
-
-    // --- MASTER & OTHER ---
-    document.getElementById('formSup').onsubmit = (e) => {
-        e.preventDefault(); sList.push({name:document.getElementById('sName').value, initial:document.getElementById('sInit').value.toUpperCase()});
-        localStorage.setItem('wms_s', JSON.stringify(sList)); e.target.reset(); refreshUI();
-    };
-    document.getElementById('formMSDN').onsubmit = (e) => {
-        e.preventDefault(); mList.push({code:document.getElementById('mCode').value, name:document.getElementById('mName').value});
-        localStorage.setItem('wms_m', JSON.stringify(mList)); e.target.reset(); refreshUI();
-    };
-
-    function tutupShift() { window.location.href = `mailto:admin@agriwangi.com?subject=WMS_ShiftReport&body=Stok_RM:_${document.getElementById('dashRM').innerText}`; }
-
-    if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 </script>
 </body>
 </html>
