@@ -2,19 +2,58 @@
   "id": "com.agriwangi.wms.v4",
   "name": "WMS ERP - PT Agri Wangi Indonesia",
   "short_name": "WMS Agri",
-  "description": "Warehouse Management System dengan kapabilitas Offline, Traceability, dan FEFO.",
+  "description": "Warehouse Management System dengan kapabilitas Offline, Traceability, FEFO, dan Manajemen MSDN.",
   "start_url": "./index.html",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#F3F4F6",
   "theme_color": "#1C2228",
   "orientation": "portrait",
-  "categories": ["business", "productivity"],
+  "dir": "ltr",
+  "lang": "id-ID",
+  "categories": ["business", "productivity", "utilities"],
   "icons": [
-    { "src": "https://via.placeholder.com/192/1C2228/FFFFFF?text=WMS", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "https://via.placeholder.com/512/1C2228/FFFFFF?text=WMS", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "https://via.placeholder.com/192/1C2228/FFFFFF?text=WMS",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://via.placeholder.com/512/1C2228/FFFFFF?text=WMS",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "screenshots": [
-    { "src": "https://via.placeholder.com/1080x1920/F3F4F6/1C2228?text=Mobile", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow" },
-    { "src": "https://via.placeholder.com/1920x1080/F3F4F6/1C2228?text=Desktop", "sizes": "1920x1080", "type": "image/png", "form_factor": "wide" }
+    {
+      "src": "https://via.placeholder.com/1080x1920/F3F4F6/1C2228?text=Mobile+Dashboard",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "https://via.placeholder.com/1920x1080/F3F4F6/1C2228?text=Desktop+Launchpad",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Penerimaan (GR)",
+      "short_name": "Inbound",
+      "description": "Buka form Good Receipt",
+      "url": "./index.html#tab-gr",
+      "icons": [{ "src": "https://via.placeholder.com/192/107E3E/FFFFFF?text=GR", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pengiriman (GI)",
+      "short_name": "Outbound",
+      "description": "Buka form Good Issue",
+      "url": "./index.html#tab-gi",
+      "icons": [{ "src": "https://via.placeholder.com/192/BB0000/FFFFFF?text=GI", "sizes": "192x192" }]
+    }
   ]
 }
